@@ -37,7 +37,7 @@ async def on_success(message: Message):
     payment = message.successful_payment
     user = message.from_user
 
-    total_amount = payment.total_amount / 100  # For Stars, 1 = 100 units
+    total_amount = payment.total_amount
     currency = payment.currency
     payload = payment.invoice_payload
 

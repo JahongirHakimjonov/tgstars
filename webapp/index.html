@@ -5,6 +5,7 @@
     <title>Buy Diamond with Stars</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         :root {
             --bg-color: var(--tg-theme-bg-color, #ffffff);
@@ -83,12 +84,12 @@
 <body>
 <div class="container">
     <div class="icon">
-        <img src="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" alt="diamond gif" style="width:100px; height:100px;">
+        <img src="utya-utya-duck.gif" alt="diamond gif" style="width:64px; height:64px;">
     </div>
     <h1>Buy 1 Diamond in OneGame</h1>
     <p>Use Telegram Stars to purchase in-game currency</p>
     <div class="price">
-        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="star icon">
+        <img src="star.png" alt="star icon">
         1 Stars
     </div>
     <div class="status" id="statusMsg"></div>
@@ -130,7 +131,7 @@
                     showMessage("❌ Request error: " + error.message, true);
                 })
                 .finally(() => {
-                    mainBtn.setText("Buy with 5 Stars");
+                    mainBtn.setText("Buy with 1 Stars");
                     mainBtn.showProgress(false);
                 });
         });

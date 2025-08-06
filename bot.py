@@ -72,20 +72,22 @@ async def on_success(message: Message):
 @dp.message(Command("refund"))
 async def refund_command(message: Message):
     charge_ids = [
-        "stxJCpqI0VYGFDMiMgy0sBFvHT5OM5kT5yUH4KrOODEOoFIOGC-kIOtSR0fIpphCFyTNfLyD4idM1ZDY_SCtJaqV0eYlfMnlnaSUwDv5LxlNFRQCg0pBNz2e4nPqw73nhv5",
-        "stxkiMEHR6jzGLvtdm4Wjo6XnehXDkY-MVVfiXXH7xCBXDZ8x6jw6xRBTje-mZCgbZEQHDD4o21lx2Ga9Ys5O_0SgPcl3xerIGAdStIDdU7L9eFNgirgkrlJUpvwd_HU5u3",
-        "stxTpv3jVy1tomna5RHVGUqkTVjwFP4glNH31ueOBN8smBNdX8kMLwRzNS6-musRbV-crqvHiX19UlOMWcEG40_1WG7sV13KcUlMIijEym_5AiypS5BpUbHhq-j9xlxLTMI",
+        "stxBYxTRe0WMYSegagnaHhx3Gcj3ocHDwxhxZFDpLTLehHap31ZsFudjAGFY4-iK3vV2OwM58Npn82xcSEvC2zwM7QtxHnsJxbYbHIjD6899AU3tlgFXp_F0Vv2rAW6-3xf",
     ]
-    user_id = message.from_user.id
+    user_id = 7109141500
     try:
         for charge_id in charge_ids:
             result = await bot(
                 RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
             )
             if result:
-                await message.answer("✅ Refund has been made. Please check your account.")
+                await bot.send_message(
+                    user_id, "✅ Refund has been made. Please check your account."
+                )
             else:
-                await message.answer("❌ Refund failed. Please try again later.")
+                await bot.send_message(
+                    user_id, "❌ Refund failed. Please try again later."
+                )
     except Exception as e:
         await message.answer(f"❌ An error occurred: {str(e)}")
 

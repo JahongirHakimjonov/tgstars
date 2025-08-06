@@ -22,40 +22,39 @@
 
         body {
             margin: 0;
-            padding: 0;
+            padding: 24px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: radial-gradient(circle at top, var(--bg-color), #f9f9f9);
+            background-color: var(--bg-color);
             color: var(--text-color);
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             min-height: 100vh;
         }
 
         .icon img {
             width: 64px;
             height: 64px;
-            display: block;
-            margin: 40px auto 16px;
-            animation: bounce 2s ease-in-out infinite;
+            margin-bottom: 16px;
         }
 
         h1 {
-            font-size: 22px;
-            margin: 0 0 8px;
+            font-size: 20px;
+            margin-bottom: 8px;
             text-align: center;
-            animation: glow 3s ease-in-out infinite;
         }
 
         p {
             font-size: 14px;
             color: var(--hint-color);
-            margin: 0 0 24px;
+            margin-bottom: 24px;
             text-align: center;
         }
 
         .input-group {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
             margin-bottom: 24px;
         }
@@ -68,13 +67,6 @@
             border-radius: 6px;
             text-align: center;
             color: var(--text-color);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-
-        .input-group input:focus {
-            transform: scale(1.1);
-            border-color: var(--accent-color);
         }
 
         .input-group img {
@@ -84,9 +76,9 @@
 
         .status {
             font-size: 14px;
-            text-align: center;
             margin-top: 16px;
             min-height: 1.2em;
+            text-align: center;
         }
 
         .status.error {
@@ -96,55 +88,9 @@
         .status.success {
             color: #27ae60;
         }
-
-        .shooting-star {
-            position: absolute;
-            top: 20%;
-            left: -10%;
-            width: 100px;
-            height: 2px;
-            background: linear-gradient(to right, transparent, #ffd700, transparent);
-            transform: rotate(45deg);
-            animation: shoot 3s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @keyframes glow {
-            0%, 100% {
-                text-shadow: 0 0 5px var(--accent-color);
-            }
-            50% {
-                text-shadow: 0 0 20px var(--accent-color);
-            }
-        }
-
-        @keyframes shoot {
-            0% {
-                left: -10%;
-                top: 20%;
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            100% {
-                left: 110%;
-                top: 80%;
-                opacity: 0;
-            }
-        }
     </style>
 </head>
 <body>
-<div class="shooting-star"></div>
 <div class="icon">
     <img src="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" alt="diamond gif">
 </div>
@@ -168,17 +114,21 @@
     if (user) {
         updateButton(1);
         mainBtn.show();
+
         const amountInput = document.getElementById('starAmount');
         amountInput.addEventListener('input', () => {
-            let v = parseInt(amountInput.value) || 1;
-            amountInput.value = v;
-            updateButton(v);
+            let val = parseInt(amountInput.value, 10);
+            if (isNaN(val) || val < 1) val = 1;
+            amountInput.value = val;
+            updateButton(val);
             showMessage('');
         });
+
         mainBtn.onClick(async () => {
-            const amount = parseInt(amountInput.value);
+            const amount = parseInt(amountInput.value, 10);
             showMessage('');
             mainBtn.showProgress(true);
+
             try {
                 const res = await fetch('https://tgstar.milliytech.uz/api/pay', {
                     method: 'POST',
@@ -187,25 +137,30 @@
                         user_id: user.id,
                         username: user.username || '',
                         full_name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-                        amount
+                        amount: amount
                     })
                 });
                 const data = await res.json();
-                if (data.status === 'ok' && data.invoice_url) Telegram.WebApp.openInvoice(data.invoice_url);
-                else showMessage('❌ ' + (data.message || 'An error occurred'), true);
-            } catch (e) {
-                showMessage('❌ Network error:' + e.message, true);
+                if (data.status === 'ok' && data.invoice_url) {
+                    Telegram.WebApp.openInvoice(data.invoice_url);
+                } else {
+                    showMessage('❌ ' + (data.message || 'An error occurred'), true);
+                }
+            } catch (err) {
+                showMessage('❌ Network error: ' + err.message, true);
             } finally {
                 mainBtn.showProgress(false);
-                updateButton(parseInt(amountInput.value));
+                updateButton(parseInt(amountInput.value, 10));
             }
         });
-    } else showMessage('❌ Could not load user data. Please reload.', true);
+    } else {
+        showMessage('❌ Could not load user data. Please reload.', true);
+    }
 
     function showMessage(msg, isError = false) {
-        const s = document.getElementById('statusMsg');
-        s.textContent = msg;
-        s.className = 'status ' + (isError ? 'error' : 'success');
+        const status = document.getElementById('statusMsg');
+        status.textContent = msg;
+        status.className = 'status ' + (isError ? 'error' : 'success');
     }
 </script>
 </body>

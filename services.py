@@ -41,7 +41,7 @@ class CreateInvoiceService:
 
         return invoice_url
 
-    async def process_refund(self, user_id: int, charge_id: str):
+    async def process_refund(self, user_id: int, charge_id: str) -> bool:
         try:
             result = await bot(
                 RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
@@ -50,12 +50,15 @@ class CreateInvoiceService:
                 await self.bot.send_message(
                     user_id, "✅ Refund has been made. Please check your account."
                 )
+                return True
             else:
                 await self.bot.send_message(
                     user_id, "❌ Refund failed. Please try again later."
                 )
+                return False
         except Exception as e:
             await self.bot.send_message(user_id, f"❌ An error occurred: {str(e)}")
+            return False
 
 
 def get_invoice_service():

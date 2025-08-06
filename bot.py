@@ -21,7 +21,7 @@ dp = Dispatcher()
 
 
 @dp.message(F.text == "/start")
-async def start(message: Message):
+async def start(message: Message) -> None:
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -36,12 +36,12 @@ async def start(message: Message):
 
 
 @dp.pre_checkout_query()
-async def pre_checkout(q: PreCheckoutQuery):
+async def pre_checkout(q: PreCheckoutQuery) -> None:
     await q.answer(ok=True)
 
 
 @dp.message(F.successful_payment)
-async def on_success(message: Message):
+async def on_success(message: Message) -> None:
     assert message.successful_payment is not None, "No successful_payment found"
     assert message.from_user is not None, "No from_user found"
 
@@ -72,5 +72,5 @@ async def on_success(message: Message):
     await message.answer(text, parse_mode="HTML")
 
 
-async def main():
+async def main() -> None:
     await dp.start_polling(bot)

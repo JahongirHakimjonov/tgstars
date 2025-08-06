@@ -32,7 +32,7 @@ class RefundRequest(BaseModel):
 
 
 @app.get("/webapp", response_class=HTMLResponse)
-async def serve_webapp():
+async def serve_webapp() -> str:
     with open("webapp/index.html", "r", encoding="utf-8") as f:
         return f.read()
 
@@ -40,7 +40,7 @@ async def serve_webapp():
 @app.post("/api/pay")
 async def pay(
     data: PayRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
-):
+) -> JSONResponse:
     user_id = data.user_id
     username = data.username
     full_name = data.full_name
@@ -53,7 +53,7 @@ async def pay(
 @app.post("/api/refund")
 async def refund(
     data: RefundRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
-):
+) -> JSONResponse:
     user_id = data.user_id
     charge_id = data.charge_id
 

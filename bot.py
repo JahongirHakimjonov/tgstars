@@ -6,7 +6,7 @@ from aiogram.types import (
     PreCheckoutQuery,
     WebAppInfo,
     InlineKeyboardMarkup,
-    InlineKeyboardButton,
+    InlineKeyboardButton, ReactionTypeEmoji,
 )
 from dotenv import load_dotenv
 
@@ -32,7 +32,17 @@ async def start(message: Message) -> None:
             ]
         ]
     )
-    await message.answer("Welcome! Click below to buy with Stars:", reply_markup=kb)
+    caption = "Welcome! Click below to buy with Stars\n\nExchange your stars for joy! ✨ Unlock special items, features, or moments that bring happiness – all with your Telegram Stars. Treat yourself or surprise a friend!"
+    await bot.set_message_reaction(
+        message.chat.id, message.message_id, [ReactionTypeEmoji(emoji="❤️")], is_big=True
+    )
+    await bot.send_photo(
+        chat_id=message.chat.id,
+        photo="https://i.postimg.cc/fbM9RjsY/photo-2025-08-06-19-23-14.jpg",
+        caption=caption,
+        reply_markup=kb,
+        reply_to_message_id=message.message_id,
+    )
 
 
 @dp.pre_checkout_query()

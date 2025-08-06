@@ -15,7 +15,7 @@
             --accent-text: var(--tg-theme-button-text-color, #fff);
             --border-color: #ddd;
             --card-bg: var(--tg-theme-secondary-bg-color, #fff);
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         * {
@@ -106,12 +106,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .fade-in {
@@ -120,97 +116,97 @@
     </style>
 </head>
 <body>
-<div class="container fade-in">
-    <div class="icon">
-        <img src="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" alt="Diamond">
+    <div class="container fade-in">
+        <div class="icon">
+            <img src="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" alt="Diamond">
+        </div>
+        <h1>Buy Diamonds in OneGame</h1>
+        <p>Use Telegram Stars to purchase in-game currency</p>
+        <div class="input-group">
+            <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="Star" class="star-icon">
+            <input type="number" id="starAmount" min="1" value="1" class="amount-input" aria-label="Amount of Stars">
+        </div>
+        <div id="statusMsg" class="status"></div>
     </div>
-    <h1>Buy Diamonds in OneGame</h1>
-    <p>Use Telegram Stars to purchase in-game currency</p>
-    <div class="input-group">
-        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="Star" class="star-icon">
-        <input type="number" id="starAmount" min="1" value="1" class="amount-input" aria-label="Amount of Stars">
-    </div>
-    <div id="statusMsg" class="status"></div>
-</div>
 
-<script>
-    Telegram.WebApp.ready();
-    const mainBtn = Telegram.WebApp.MainButton;
-    const user = Telegram.WebApp.initDataUnsafe?.user;
+    <script>
+        Telegram.WebApp.ready();
+        const mainBtn = Telegram.WebApp.MainButton;
+        const user = Telegram.WebApp.initDataUnsafe?.user;
 
-    function updateButton(amount) {
-        mainBtn.setText(`Pay ${amount} Star${amount > 1 ? 's' : ''}`);
-    }
-
-    if (user) {
-        updateButton(1);
-        mainBtn.show();
-
-        const amountInput = document.getElementById('starAmount');
-        amountInput.addEventListener('input', () => {
-            let val = parseInt(amountInput.value, 10);
-            if (isNaN(val) || val < 1) val = 1;
-            amountInput.value = val;
-            updateButton(val);
-            showMessage('');
-        });
-
-        mainBtn.onClick(async () => {
-            const amount = parseInt(amountInput.value, 10);
-            showMessage('');
-            mainBtn.showProgress(true);
-
-            try {
-                const res = await fetch('https://tgstar.milliytech.uz/api/pay', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        user_id: user.id,
-                        username: user.username || '',
-                        full_name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-                        amount: amount
-                    })
-                });
-                const data = await res.json();
-                if (data.status === 'ok' && data.invoice_url) {
-                    Telegram.WebApp.openInvoice(data.invoice_url, (status) => {
-                        if (status === 'paid') {
-                            showMessage('✅ Payment successful!', false);
-                        } else {
-                            showMessage('❌ Payment failed or was cancelled.', true);
-                        }
-                    });
-                } else {
-                    showMessage('❌ ' + (data.message || 'An error occurred'), true);
-                }
-            } catch (err) {
-                showMessage('❌ Network error: ' + err.message, true);
-            } finally {
-                mainBtn.showProgress(false);
-                updateButton(parseInt(amountInput.value, 10));
-            }
-        });
-    } else {
-        showMessage('❌ Could not load user data. Please reload.', true);
-    }
-
-    Telegram.WebApp.onEvent('invoiceClosed', function () {
-        mainBtn.showProgress(false);
-        updateButton(parseInt(amountInput.value, 10));
-    });
-
-    function showMessage(msg, isError = false) {
-        const status = document.getElementById('statusMsg');
-        status.textContent = msg;
-        status.className = 'status ' + (isError ? 'error' : 'success');
-        if (msg) {
-            status.classList.add('fade-in');
-            setTimeout(() => {
-                status.classList.remove('fade-in');
-                status.textContent = '';
-            }, 3000);
+        function updateButton(amount) {
+            mainBtn.setText(`Pay ${amount} Star${amount > 1 ? 's' : ''}`);
         }
-    }
-</script>
+
+        if (user) {
+            updateButton(1);
+            mainBtn.show();
+
+            const amountInput = document.getElementById('starAmount');
+            amountInput.addEventListener('input', () => {
+                let val = parseInt(amountInput.value, 10);
+                if (isNaN(val) || val < 1) val = 1;
+                amountInput.value = val;
+                updateButton(val);
+                showMessage('');
+            });
+
+            mainBtn.onClick(async () => {
+                const amount = parseInt(amountInput.value, 10);
+                showMessage('');
+                mainBtn.showProgress(true);
+
+                try {
+                    const res = await fetch('https://tgstar.milliytech.uz/api/pay', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            user_id: user.id,
+                            username: user.username || '',
+                            full_name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+                            amount: amount
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.status === 'ok' && data.invoice_url) {
+                        Telegram.WebApp.openInvoice(data.invoice_url);
+                    } else {
+                        showMessage('❌ ' + (data.message || 'An error occurred'), true);
+                        mainBtn.showProgress(false);
+                        updateButton(amount);
+                    }
+                } catch (err) {
+                    showMessage('❌ Network error: ' + err.message, true);
+                    mainBtn.showProgress(false);
+                    updateButton(amount);
+                }
+            });
+
+            Telegram.WebApp.onEvent('invoiceClosed', function(object) {
+                mainBtn.showProgress(false);
+                if (object.status === 'paid') {
+                    showMessage('✅ Payment successful!', false);
+                } else {
+                    showMessage('❌ Payment failed or was cancelled.', true);
+                }
+                updateButton(parseInt(amountInput.value, 10));
+            });
+        } else {
+            showMessage('❌ Could not load user data. Please reload.', true);
+        }
+
+        function showMessage(msg, isError = false) {
+            const status = document.getElementById('statusMsg');
+            status.textContent = msg;
+            status.className = 'status ' + (isError ? 'error' : 'success');
+            if (msg) {
+                status.classList.add('fade-in');
+                setTimeout(() => {
+                    status.classList.remove('fade-in');
+                    status.textContent = '';
+                }, 3000);
+            }
+        }
+    </script>
 </body>
 </html>

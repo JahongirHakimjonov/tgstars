@@ -3,7 +3,6 @@ import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
-from pydantic import BaseModel
 
 from bot import dp, bot
 
@@ -24,16 +23,14 @@ async def serve_webapp():
         return f.read()
 
 
-class PayRequest(BaseModel):
-    user_id: int
-    username: str | None
-    full_name: str | None
-
-
 @app.post("/api/pay")
-async def pay(data: PayRequest):
+async def pay(data):
+    user_id = data.get("user_id")
+    username = data.get("username")
+    full_name = data.get("full_name")
+
     # Normally you'd validate user, log transaction, check inventory, etc.
-    print(data)
+    print(f"Payment received from user {user_id} ({username}, {full_name})")
     return JSONResponse({
         "status": "ok",
         "slug": "buy_diamond_5_stars"  # Must be pre-configured in Telegram Stars

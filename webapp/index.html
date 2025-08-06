@@ -103,6 +103,7 @@
         mainBtn.show();
 
         mainBtn.onClick(() => {
+            showMessage("");  // oldingi statusni tozalash
             mainBtn.setText("Processing...");
             mainBtn.showProgress(true);
 
@@ -117,14 +118,14 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.status === "ok" && data.slug) {
-                        Telegram.WebApp.openInvoice(data.slug);
+                    if (data.status === "ok" && data.invoice_url) {
+                        Telegram.WebApp.openInvoice(data.invoice_url);
                     } else {
-                        showMessage("❌ " + (data || "Unknown error occurred."), true);
+                        showMessage("❌ " + (data.message || "Unknown error occurred."), true);
                     }
                 })
                 .catch((error) => {
-                    showMessage("❌ " + (error.message || "Error occurred during request."), true);
+                    showMessage("❌ Request error: " + error.message, true);
                 })
                 .finally(() => {
                     mainBtn.setText("Buy with 5 Stars");

@@ -48,14 +48,14 @@ async def on_success(message: Message):
     print(f"Payload: {payload}")
     print(f"Telegram charge ID: {tg_charge}")
     print(f"Provider charge ID: {prov_charge}")
-    print(f"Amount paid: {total_amount:.2f} {currency}")
+    print(f"Amount paid: {total_amount} {currency}")
     print("===========================")
 
     text = (
         f"✅ <b>Payment successful!</b>\n\n"
         f"👤 <b>User:</b> {user.full_name} (<code>{user.id}</code>)\n"
         f"💎 <b>Product:</b> <code>{payload}</code>\n"
-        f"💰 <b>Amount:</b> <code>{total_amount:.2f} {currency}</code>\n\n"
+        f"💰 <b>Amount:</b> <code>{total_amount} {currency}</code>\n\n"
         f"🎉 Your item has been activated. Thank you!"
     )
     await message.answer(text, parse_mode="HTML")

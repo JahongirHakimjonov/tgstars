@@ -7,24 +7,34 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="icon" href="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" type="image/gif">
     <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #888888);
+            --button-color: var(--tg-theme-button-color, #2ea6ff);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            padding: 24px;
             max-width: 400px;
             width: 100%;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
         }
 
         .icon img {
@@ -38,9 +48,9 @@
         }
 
         p {
+            color: var(--hint-color);
             font-size: 16px;
-            color: #666;
-            margin: 0 0 20px 0;
+            margin-bottom: 24px;
         }
 
         .input-group {

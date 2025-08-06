@@ -1,8 +1,6 @@
 import os
 
 from aiogram import Bot, Dispatcher, F
-from aiogram.filters import Command
-from aiogram.methods import RefundStarPayment
 from aiogram.types import (
     Message,
     PreCheckoutQuery,
@@ -13,7 +11,10 @@ from aiogram.types import (
 from dotenv import load_dotenv
 
 load_dotenv()
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+if BOT_TOKEN is None:
+    raise ValueError("BOT_TOKEN is not set in the environment variables")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -41,9 +42,11 @@ async def pre_checkout(q: PreCheckoutQuery):
 
 @dp.message(F.successful_payment)
 async def on_success(message: Message):
+    assert message.successful_payment is not None, "No successful_payment found"
+    assert message.from_user is not None, "No from_user found"
+
     payment = message.successful_payment
     user = message.from_user
-    print(str(payment))
 
     total_amount = payment.total_amount
     currency = payment.currency
@@ -67,29 +70,6 @@ async def on_success(message: Message):
         f"🎉 Your item has been activated. Thank you!"
     )
     await message.answer(text, parse_mode="HTML")
-
-
-@dp.message(Command("refund"))
-async def refund_command(message: Message):
-    charge_ids = [
-        "stxBYxTRe0WMYSegagnaHhx3Gcj3ocHDwxhxZFDpLTLehHap31ZsFudjAGFY4-iK3vV2OwM58Npn82xcSEvC2zwM7QtxHnsJxbYbHIjD6899AU3tlgFXp_F0Vv2rAW6-3xf",
-    ]
-    user_id = 7109141500
-    try:
-        for charge_id in charge_ids:
-            result = await bot(
-                RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
-            )
-            if result:
-                await bot.send_message(
-                    user_id, "✅ Refund has been made. Please check your account."
-                )
-            else:
-                await bot.send_message(
-                    user_id, "❌ Refund failed. Please try again later."
-                )
-    except Exception as e:
-        await message.answer(f"❌ An error occurred: {str(e)}")
 
 
 async def main():

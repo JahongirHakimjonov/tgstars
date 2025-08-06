@@ -1,12 +1,15 @@
-from aiogram import Bot
-from aiogram.types import LabeledPrice
 import random
+
+from aiogram import Bot
+from aiogram.methods import RefundStarPayment
+from aiogram.types import LabeledPrice
+
 from bot import bot
 
 
 class CreateInvoiceService:
-    def __init__(self, bot: Bot):
-        self.bot = bot
+    def __init__(self, tg_bot: Bot):
+        self.bot = tg_bot
 
     async def create_invoice(self, user_id: int, username: str, full_name: str) -> str:
         images = [
@@ -38,6 +41,22 @@ class CreateInvoiceService:
 
         return invoice_url
 
+    async def process_refund(self, user_id: int, charge_id: str):
+        try:
+            result = await bot(
+                RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
+            )
+            if result:
+                await self.bot.send_message(
+                    user_id, "✅ Refund has been made. Please check your account."
+                )
+            else:
+                await self.bot.send_message(
+                    user_id, "❌ Refund failed. Please try again later."
+                )
+        except Exception as e:
+            await self.bot.send_message(user_id, f"❌ An error occurred: {str(e)}")
+
 
 def get_invoice_service():
-    return CreateInvoiceService(bot=bot)
+    return CreateInvoiceService(tg_bot=bot)

@@ -7,27 +7,18 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="icon" href="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" type="image/gif">
     <style>
-        :root {
-            --bg-color: var(--tg-theme-bg-color, #ffffff);
-            --text-color: var(--tg-theme-text-color, #000000);
-            --hint-color: var(--tg-theme-hint-color, #888888);
-            --button-color: var(--tg-theme-button-color, #2ea6ff);
-            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-            --secondary_bg_color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-        }
-
         body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            margin: 0;
         }
 
         .container {
+            background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -47,9 +38,9 @@
         }
 
         p {
-            color: var(--hint-color);
             font-size: 16px;
-            margin-bottom: 24px;
+            color: #666;
+            margin: 0 0 20px 0;
         }
 
         .input-group {
@@ -71,7 +62,6 @@
             width: 100px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            background-color: var(--secondary_bg_color);
         }
 
         .status {
@@ -140,7 +130,7 @@
         mainBtn.onClick(async () => {
             const amount = parseInt(amountInput.value, 10);
             showMessage('');
-            mainBtn.showProgress(true); // Показать прогресс
+            mainBtn.showProgress(true); // Progressni ko'rsatish
 
             try {
                 const res = await fetch('https://tgstar.milliytech.uz/api/pay', {
@@ -156,30 +146,30 @@
                 const data = await res.json();
                 if (data.status === 'ok' && data.invoice_url) {
                     Telegram.WebApp.openInvoice(data.invoice_url);
-                    // Мы не скрываем здесь прогресс, мы ждем счет-фактуруЗакрыто
+                    // Progressni bu yerda yashirmaymiz, invoiceClosed ni kutamiz
                 } else {
-                    showMessage('❌ ' + (data.message || 'An error occurred.'), true);
-                    mainBtn.hideProgress(); // Скрыть прогресс, если есть ошибка
+                    showMessage('❌ ' + (data.message || 'Xatolik yuz berdi'), true);
+                    mainBtn.hideProgress(); // Xatolik bo'lsa progressni yashirish
                     updateButton(amount);
                 }
             } catch (err) {
-                showMessage('❌ Network error: ' + err.message, true);
-                mainBtn.hideProgress(); // Скрыть прогресс, если произошла ошибка сети
+                showMessage('❌ Tarmoq xatosi: ' + err.message, true);
+                mainBtn.hideProgress(); // Tarmoq xatosi bo'lsa progressni yashirish
                 updateButton(amount);
             }
         });
 
         Telegram.WebApp.onEvent('invoiceClosed', function (object) {
-            mainBtn.hideProgress(); // Скрыть ход выполнения при закрытии счета
+            mainBtn.hideProgress(); // Invoys yopilganda progressni yashirish
             if (object.status === 'paid') {
-                showMessage('✅ Payment was successful!', false);
+                showMessage('✅ To\'lov muvaffaqiyatli amalga oshirildi!', false);
             } else {
-                showMessage('❌ The payment failed or was canceled.', true);
+                showMessage('❌ To\'lov amalga oshmadi yoki bekor qilindi.', true);
             }
             updateButton(parseInt(amountInput.value, 10));
         });
     } else {
-        showMessage('❌ User data could not be loaded. Please reload..', true);
+        showMessage('❌ Foydalanuvchi ma\'lumotlari yuklanmadi. Iltimos, qayta yuklang.', true);
     }
 
     function showMessage(msg, isError = false) {

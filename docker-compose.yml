@@ -1,0 +1,11 @@
+services:
+  backend:
+    build:
+      context: ./app
+    restart: always
+    volumes:
+      - ./app:/app
+    ports:
+      - "8018:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+

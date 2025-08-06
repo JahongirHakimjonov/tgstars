@@ -63,7 +63,7 @@ async def on_success(message: Message):
         f"✅ <b>Payment successful!</b>\n\n"
         f"👤 <b>User:</b> {user.full_name} (<code>{user.id}</code>)\n"
         f"💎 <b>Product:</b> <code>{payload}</code>\n"
-        f"💰 <b>Amount:</b> <code>{total_amount}{currency}</code>\n\n"
+        f"💰 <b>Amount:</b> <code>{total_amount} {currency}</code>\n\n"
         f"🎉 Your item has been activated. Thank you!"
     )
     await message.answer(text, parse_mode="HTML")

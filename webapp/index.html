@@ -87,7 +87,7 @@
     <p>Use Telegram Stars to purchase in-game currency</p>
     <div class="price">
         <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="star icon">
-        5 Stars
+        1 Stars
     </div>
     <div class="status" id="statusMsg"></div>
 </div>
@@ -99,11 +99,11 @@
     const user = Telegram.WebApp.initDataUnsafe?.user;
 
     if (user) {
-        mainBtn.setText("Buy with 5 Stars");
+        mainBtn.setText("Buy with 1 Stars");
         mainBtn.show();
 
         mainBtn.onClick(() => {
-            showMessage("");  // oldingi statusni tozalash
+            showMessage("");
             mainBtn.setText("Processing...");
             mainBtn.showProgress(true);
 

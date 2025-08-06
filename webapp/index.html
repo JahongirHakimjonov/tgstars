@@ -140,7 +140,7 @@
         mainBtn.onClick(async () => {
             const amount = parseInt(amountInput.value, 10);
             showMessage('');
-            mainBtn.showProgress(true); // Progressni ko'rsatish
+            mainBtn.showProgress(true); // Показать прогресс
 
             try {
                 const res = await fetch('https://tgstar.milliytech.uz/api/pay', {
@@ -156,30 +156,30 @@
                 const data = await res.json();
                 if (data.status === 'ok' && data.invoice_url) {
                     Telegram.WebApp.openInvoice(data.invoice_url);
-                    // Progressni bu yerda yashirmaymiz, invoiceClosed ni kutamiz
+                    // Мы не скрываем здесь прогресс, мы ждем счет-фактуруЗакрыто
                 } else {
-                    showMessage('❌ ' + (data.message || 'Xatolik yuz berdi'), true);
-                    mainBtn.hideProgress(); // Xatolik bo'lsa progressni yashirish
+                    showMessage('❌ ' + (data.message || 'An error occurred.'), true);
+                    mainBtn.hideProgress(); // Скрыть прогресс, если есть ошибка
                     updateButton(amount);
                 }
             } catch (err) {
-                showMessage('❌ Tarmoq xatosi: ' + err.message, true);
-                mainBtn.hideProgress(); // Tarmoq xatosi bo'lsa progressni yashirish
+                showMessage('❌ Network error: ' + err.message, true);
+                mainBtn.hideProgress(); // Скрыть прогресс, если произошла ошибка сети
                 updateButton(amount);
             }
         });
 
         Telegram.WebApp.onEvent('invoiceClosed', function (object) {
-            mainBtn.hideProgress(); // Invoys yopilganda progressni yashirish
+            mainBtn.hideProgress(); // Скрыть ход выполнения при закрытии счета
             if (object.status === 'paid') {
-                showMessage('✅ To\'lov muvaffaqiyatli amalga oshirildi!', false);
+                showMessage('✅ Payment was successful!', false);
             } else {
-                showMessage('❌ To\'lov amalga oshmadi yoki bekor qilindi.', true);
+                showMessage('❌ The payment failed or was canceled.', true);
             }
             updateButton(parseInt(amountInput.value, 10));
         });
     } else {
-        showMessage('❌ Foydalanuvchi ma\'lumotlari yuklanmadi. Iltimos, qayta yuklang.', true);
+        showMessage('❌ User data could not be loaded. Please reload..', true);
     }
 
     function showMessage(msg, isError = false) {

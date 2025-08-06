@@ -2,147 +2,210 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Buy Diamond with Stars</title>
+    <title>Buy Diamonds with Stars</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #ffffff);
-            --text-color: var(--tg-theme-text-color, #000000);
-            --hint-color: var(--tg-theme-hint-color, #888888);
-            --button-color: var(--tg-theme-button-color, #2ea6ff);
-            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --bg-color: var(--tg-theme-bg-color, #f9f9f9);
+            --text-color: var(--tg-theme-text-color, #333);
+            --hint-color: var(--tg-theme-hint-color, #666);
+            --accent-color: var(--tg-theme-button-color, #2ea6ff);
+            --accent-text: var(--tg-theme-button-text-color, #fff);
+            --border-color: #ddd;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background: radial-gradient(circle at top, var(--bg-color), #f9f9f9);
             color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            align-items: center;
+            overflow: hidden;
             min-height: 100vh;
         }
 
-        .container {
-            width: 100%;
-            padding: 24px;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-            border-radius: 12px;
-        }
-
-        .icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+        .icon img {
+            width: 64px;
+            height: 64px;
+            display: block;
+            margin: 40px auto 16px;
+            animation: bounce 2s ease-in-out infinite;
         }
 
         h1 {
             font-size: 22px;
-            margin: 0 0 10px;
+            margin: 0 0 8px;
+            text-align: center;
+            animation: glow 3s ease-in-out infinite;
         }
 
         p {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--hint-color);
+            margin: 0 0 24px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             margin-bottom: 24px;
         }
 
-        .price {
-            font-size: 18px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+        .input-group input {
+            width: 60px;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            color: var(--text-color);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
         }
 
-        .price img {
-            width: 22px;
-            height: 22px;
+        .input-group input:focus {
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+        }
+
+        .input-group img {
+            width: 24px;
+            height: 24px;
         }
 
         .status {
             font-size: 14px;
+            text-align: center;
             margin-top: 16px;
+            min-height: 1.2em;
         }
 
         .status.error {
-            color: red;
+            color: #e74c3c;
         }
 
         .status.success {
-            color: green;
+            color: #27ae60;
+        }
+
+        .shooting-star {
+            position: absolute;
+            top: 20%;
+            left: -10%;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #ffd700, transparent);
+            transform: rotate(45deg);
+            animation: shoot 3s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 5px var(--accent-color);
+            }
+            50% {
+                text-shadow: 0 0 20px var(--accent-color);
+            }
+        }
+
+        @keyframes shoot {
+            0% {
+                left: -10%;
+                top: 20%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                left: 110%;
+                top: 80%;
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="icon">
-        <img src="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" alt="diamond gif" style="width:64px; height:64px;">
-    </div>
-    <h1>Buy 1 Diamond in OneGame</h1>
-    <p>Use Telegram Stars to purchase in-game currency</p>
-    <div class="price">
-        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="star icon">
-        1 Stars
-    </div>
-    <div class="status" id="statusMsg"></div>
+<div class="shooting-star"></div>
+<div class="icon">
+    <img src="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" alt="diamond gif">
 </div>
+<h1>Buy Diamonds in OneGame</h1>
+<p>Use Telegram Stars to purchase in-game currency</p>
+<div class="input-group">
+    <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="star icon">
+    <input type="number" id="starAmount" min="1" value="1"/>
+</div>
+<div class="status" id="statusMsg"></div>
 
 <script>
     Telegram.WebApp.ready();
-
     const mainBtn = Telegram.WebApp.MainButton;
     const user = Telegram.WebApp.initDataUnsafe?.user;
 
-    if (user) {
-        mainBtn.setText("Buy with 1 Stars");
-        mainBtn.show();
-
-        mainBtn.onClick(() => {
-            showMessage("");
-            mainBtn.setText("Processing...");
-            mainBtn.showProgress(true);
-
-            fetch("https://tgstar.milliytech.uz/api/pay", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    user_id: user.id,
-                    username: user.username || "",
-                    full_name: `${user.first_name || ""} ${user.last_name || ""}`.trim()
-                })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "ok" && data.invoice_url) {
-                        Telegram.WebApp.openInvoice(data.invoice_url);
-                    } else {
-                        showMessage("❌ " + (data.message || "Unknown error occurred."), true);
-                    }
-                })
-                .catch((error) => {
-                    showMessage("❌ Request error: " + error.message, true);
-                })
-                .finally(() => {
-                    mainBtn.setText("Buy with 1 Stars");
-                    mainBtn.showProgress(false);
-                });
-        });
-    } else {
-        showMessage("❌ User data not available. Please reload the WebApp.", true);
+    function updateButton(amount) {
+        mainBtn.setText(`Pay ${amount} Star${amount > 1 ? 's' : ''}`);
     }
 
-    function showMessage(message, isError = false) {
-        const status = document.getElementById("statusMsg");
-        status.innerText = message;
-        status.className = "status " + (isError ? "error" : "success");
+    if (user) {
+        updateButton(1);
+        mainBtn.show();
+        const amountInput = document.getElementById('starAmount');
+        amountInput.addEventListener('input', () => {
+            let v = parseInt(amountInput.value) || 1;
+            amountInput.value = v;
+            updateButton(v);
+            showMessage('');
+        });
+        mainBtn.onClick(async () => {
+            const amount = parseInt(amountInput.value);
+            showMessage('');
+            mainBtn.showProgress(true);
+            try {
+                const res = await fetch('https://tgstar.milliytech.uz/api/pay', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: user.id,
+                        username: user.username || '',
+                        full_name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+                        amount
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'ok' && data.invoice_url) Telegram.WebApp.openInvoice(data.invoice_url);
+                else showMessage('❌ ' + (data.message || 'An error occurred'), true);
+            } catch (e) {
+                showMessage('❌ Network error:' + e.message, true);
+            } finally {
+                mainBtn.showProgress(false);
+                updateButton(parseInt(amountInput.value));
+            }
+        });
+    } else showMessage('❌ Could not load user data. Please reload.', true);
+
+    function showMessage(msg, isError = false) {
+        const s = document.getElementById('statusMsg');
+        s.textContent = msg;
+        s.className = 'status ' + (isError ? 'error' : 'success');
     }
 </script>
 </body>

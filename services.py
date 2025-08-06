@@ -11,7 +11,7 @@ class CreateInvoiceService:
     def __init__(self, tg_bot: Bot):
         self.bot = tg_bot
 
-    async def create_invoice(self, user_id: int, username: str, full_name: str) -> str:
+    async def create_invoice(self, user_id: int, username: str, full_name: str, amount: int) -> str:
         images = [
             "https://i.postimg.cc/DwTdr6xW/download-6.jpg",
             "https://i.postimg.cc/JhTNWLMJ/download-7.jpg",
@@ -22,7 +22,7 @@ class CreateInvoiceService:
         payload = f"diamond_purchase_{user_id}"
         provider_token = ""
         currency = "XTR"
-        prices = [LabeledPrice(label="Buy 1 Diamond in 1 Game", amount=1)]
+        prices = [LabeledPrice(label="Buy 1 Diamond in 1 Game", amount=amount)]
         photo_url = random.choice(images)
         photo_width = 400
         photo_height = 400

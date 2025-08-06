@@ -24,6 +24,7 @@ class PayRequest(BaseModel):
     user_id: int
     username: str
     full_name: str
+    amount: int
 
 
 class RefundRequest(BaseModel):
@@ -44,9 +45,10 @@ async def pay(
     user_id = data.user_id
     username = data.username
     full_name = data.full_name
+    amount = data.amount
 
     print(f"Payment received from user {user_id} ({username}, {full_name})")
-    invoice_url = await invoice.create_invoice(user_id, username, full_name)
+    invoice_url = await invoice.create_invoice(user_id, username, full_name, amount)
     return JSONResponse({"status": "ok", "invoice_url": f"{invoice_url}"})
 
 

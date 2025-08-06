@@ -21,45 +21,44 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             min-height: 100vh;
         }
 
         .container {
-            background: #f9f9f9;
-            padding: 30px 24px;
-            max-width: 400px;
+            background-color: #f4f4f4;
             width: 90%;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            max-width: 400px;
+            padding: 32px 24px;
             border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            text-align: center;
         }
 
         .icon {
             font-size: 64px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         h1 {
             font-size: 22px;
-            margin-bottom: 8px;
+            margin: 0 0 10px;
         }
 
         p {
-            color: var(--hint-color);
             font-size: 15px;
+            color: var(--hint-color);
             margin-bottom: 24px;
         }
 
         .price {
             font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            margin-bottom: 20px;
         }
 
         .price img {
@@ -68,8 +67,15 @@
         }
 
         .status {
-            margin-top: 16px;
             font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .status.error {
+            color: red;
+        }
+
+        .status.success {
             color: green;
         }
     </style>
@@ -80,7 +86,7 @@
     <h1>Buy 1 Diamond in OneGame</h1>
     <p>Use Telegram Stars to purchase in-game currency</p>
     <div class="price">
-        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="star">
+        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="star icon">
         5 Stars
     </div>
     <div class="status" id="statusMsg"></div>
@@ -88,31 +94,52 @@
 
 <script>
     Telegram.WebApp.ready();
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    Telegram.WebApp.MainButton.setText("Buy with 5 Stars");
-    Telegram.WebApp.MainButton.show();
 
-    Telegram.WebApp.MainButton.onClick(() => {
-        fetch("https://tgstar.milliytech.uz/api/pay", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                user_id: user.id,
-                username: user.username,
-                full_name: `${user.first_name} ${user.last_name || ''}`
+    const mainBtn = Telegram.WebApp.MainButton;
+    const user = Telegram.WebApp.initDataUnsafe?.user;
+
+    if (user) {
+        mainBtn.setText("Buy with 5 Stars");
+        mainBtn.show();
+
+        mainBtn.onClick(() => {
+            mainBtn.setText("Processing...");
+            mainBtn.showProgress(true);
+
+            fetch("https://tgstar.milliytech.uz/api/pay", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    user_id: user.id,
+                    username: user.username || "",
+                    full_name: `${user.first_name || ""} ${user.last_name || ""}`.trim()
+                })
             })
-        }).then(res => res.json())
-            .then(data => {
-                if (data.status === "ok" && data.slug) {
-                    Telegram.WebApp.openInvoice(data.slug);
-                } else {
-                    document.getElementById("statusMsg").innerText = "❌ Could not create invoice.";
-                }
-            })
-            .catch(() => {
-                document.getElementById("statusMsg").innerText = "❌ Error occurred during request.";
-            });
-    });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "ok" && data.slug) {
+                        Telegram.WebApp.openInvoice(data.slug);
+                    } else {
+                        showMessage("❌ Could not create invoice.", true);
+                    }
+                })
+                .catch(() => {
+                    showMessage("❌ Error occurred during request.", true);
+                })
+                .finally(() => {
+                    mainBtn.setText("Buy with 5 Stars");
+                    mainBtn.showProgress(false);
+                });
+        });
+    } else {
+        showMessage("❌ User data not available. Please reload the WebApp.", true);
+    }
+
+    function showMessage(message, isError = false) {
+        const status = document.getElementById("statusMsg");
+        status.innerText = message;
+        status.className = "status " + (isError ? "error" : "success");
+    }
 </script>
 </body>
 </html>

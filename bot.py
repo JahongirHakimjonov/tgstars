@@ -48,7 +48,7 @@ async def on_success(message: Message):
     print(f"Payload: {payload}")
     print(f"Telegram charge ID: {tg_charge}")
     print(f"Provider charge ID: {prov_charge}")
-    print(f"Amount paid: {total_amount} {currency}")
+    print(f"Amount paid: {int(total_amount * 100)} {currency}")
     print("===========================")
 
     text = (

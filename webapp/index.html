@@ -2,40 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Buy with Telegram Stars</title>
+    <title>Buy Gold with Stars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #888888);
+            --button-color: var(--tg-theme-button-color, #2ea6ff);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .gold-icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: var(--hint-color);
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .price-box {
+            font-size: 18px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .stars {
+            display: inline-flex;
+            align-items: center;
+            font-size: 16px;
+            gap: 6px;
+        }
+
+        .stars img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: green;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Shop</h1>
-    <p>You can buy 100 gold for 50 Stars</p>
+<div class="container">
+    <div class="gold-icon">💰</div>
+    <h1>Buy 100 Gold</h1>
+    <p>Make in-game purchases using Telegram Stars</p>
 
-    <script>
-        Telegram.WebApp.ready();
+    <div class="price-box">
+      <span class="stars">
+        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="stars"/>
+        50 Stars
+      </span>
+    </div>
 
-        const user = Telegram.WebApp.initDataUnsafe.user;
-        Telegram.WebApp.MainButton.setText("Buy with 50 Stars");
-        Telegram.WebApp.MainButton.show();
+    <div class="status" id="statusMsg"></div>
+</div>
 
-        Telegram.WebApp.MainButton.onClick(() => {
-            fetch("https://tgstarapi.milliytech.uz/api/pay", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    user_id: user.id,
-                    username: user.username,
-                    full_name: `${user.first_name} ${user.last_name || ""}`
-                })
-            }).then(resp => resp.json())
-              .then(data => {
-                  if (data.status === "ok") {
-                      Telegram.WebApp.close();
-                  } else {
-                      alert("Payment error");
-                  }
-              });
+<script>
+    Telegram.WebApp.ready();
+    const user = Telegram.WebApp.initDataUnsafe.user;
+
+    Telegram.WebApp.MainButton.setText("Buy with 50 Stars");
+    Telegram.WebApp.MainButton.show();
+
+    Telegram.WebApp.MainButton.onClick(() => {
+        fetch("https://tgstarapi.milliytech.uz/api/pay", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                username: user.username,
+                full_name: `${user.first_name} ${user.last_name || ""}`
+            })
+        }).then(res => res.json())
+            .then(data => {
+                if (data.status === "ok") {
+                    document.getElementById("statusMsg").textContent = "✅ Payment successful!";
+                    setTimeout(() => Telegram.WebApp.close(), 1500);
+                } else {
+                    document.getElementById("statusMsg").textContent = "❌ Payment failed. Try again.";
+                }
+            }).catch(() => {
+            document.getElementById("statusMsg").textContent = "❌ Error occurred. Please try again.";
         });
-    </script>
+    });
+</script>
 </body>
 </html>

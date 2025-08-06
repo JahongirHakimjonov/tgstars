@@ -107,6 +107,13 @@
     const mainBtn = Telegram.WebApp.MainButton;
     const user = Telegram.WebApp.initDataUnsafe?.user;
 
+    Telegram.WebApp.onEvent('invoiceClosed', function () {
+        showMessage('✅ Инвойс закрыт.', false);
+        // Здесь можно добавить дополнительную логику, например, обновление UI
+        mainBtn.showProgress(false);
+        updateButton(parseInt(amountInput.value, 10));
+    });
+
     function updateButton(amount) {
         mainBtn.setText(`Pay ${amount} Star${amount > 1 ? 's' : ''}`);
     }

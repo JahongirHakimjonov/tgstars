@@ -65,8 +65,8 @@ async def on_success(message: Message):
 
 @dp.message(Command("refund"))
 async def refund_command(message: Message):
-    charge_id = "stxPnVqs9M0PztkdCF0aAFD5ePd6suymPMgPoE7SaxKmMf11ZRLEIX6Ttt66DqOu4LeJQXuQHejvKq5B7tkbzEUjJxBEFRYB3N1YykSA1sHIB3WYLybX5qmvkEdBOT4p5Zc"
-    user_id = message.from_user.id
+    charge_id = "stxSyfQjLjDdiLSKFpWzBDHZQVeUZTTT7guwmnhsqs-RrJZrzWe_eQ0BU_Gmz2voBlNUSu1BYnVuFoNyJetu7KPgdyHec4VyGSNQVzTwQMLdJ1athcM9JWqAyQvcqa7RttC"
+    user_id = "1905881970"
 
     result = await bot(RefundStarPayment(
         user_id=user_id,

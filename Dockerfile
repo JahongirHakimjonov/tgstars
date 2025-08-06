@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y curl && \
 
 # Loyihani ko‘chirib o‘tkazamiz
 WORKDIR /app
-COPY pyproject.toml poetry.lock* /app/
+COPY ./pyproject.toml ./
 
 # Dependencies'larni o‘rnatamiz
 RUN poetry install --no-root

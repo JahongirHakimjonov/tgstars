@@ -1,21 +1,18 @@
-[project]
+[tool.poetry]
 name = "stars"
 version = "0.1.0"
 description = "TgStar"
-authors = [
-    { name = "JahongirHakimjonov", email = "jahongirhakimjonov@gmail.com" }
-]
+authors = ["JahongirHakimjonov <jahongirhakimjonov@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.12"
 
-dependencies = [
-    "aiogram==3.4.1",
-    "fastapi==0.110.2",
-    "uvicorn==0.29.0",
-    "httpx==0.27.0",
-    "pydantic==2.7.3",
-    "python-dotenv==1.0.0"
-]
+[tool.poetry.dependencies]
+python = ">=3.12"
+aiogram = "3.4.1"
+fastapi = "0.110.2"
+uvicorn = "0.29.0"
+httpx = "0.27.0"
+pydantic = "2.5.3"
+python-dotenv = "1.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

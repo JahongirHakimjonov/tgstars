@@ -107,12 +107,6 @@
     const mainBtn = Telegram.WebApp.MainButton;
     const user = Telegram.WebApp.initDataUnsafe?.user;
 
-    Telegram.WebApp.onEvent('invoiceClosed', function () {
-        showMessage('✅ Инвойс закрыт.', false);
-        // Здесь можно добавить дополнительную логику, например, обновление UI
-        mainBtn.showProgress(false);
-        updateButton(parseInt(amountInput.value, 10));
-    });
 
     function updateButton(amount) {
         mainBtn.setText(`Pay ${amount} Star${amount > 1 ? 's' : ''}`);
@@ -163,6 +157,12 @@
     } else {
         showMessage('❌ Could not load user data. Please reload.', true);
     }
+
+    Telegram.WebApp.onEvent('invoiceClosed', function () {
+        showMessage('✅ Invoice closed', false);
+        mainBtn.showProgress(false);
+        updateButton(parseInt(10));
+    });
 
     function showMessage(msg, isError = false) {
         const status = document.getElementById('statusMsg');

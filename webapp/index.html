@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Buy with Telegram Stars</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <h1>Welcome to the Shop</h1>
+    <p>You can buy 100 gold for 50 Stars</p>
+
+    <script>
+        Telegram.WebApp.ready();
+
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        Telegram.WebApp.MainButton.setText("Buy with 50 Stars");
+        Telegram.WebApp.MainButton.show();
+
+        Telegram.WebApp.MainButton.onClick(() => {
+            fetch("https://b656c54c64db.ngrok-free.app/api/pay", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: user.id,
+                    username: user.username,
+                    full_name: `${user.first_name} ${user.last_name || ""}`
+                })
+            }).then(resp => resp.json())
+              .then(data => {
+                  if (data.status === "ok") {
+                      Telegram.WebApp.close();
+                  } else {
+                      alert("Payment error");
+                  }
+              });
+        });
+    </script>
+</body>
+</html>

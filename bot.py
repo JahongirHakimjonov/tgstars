@@ -43,8 +43,9 @@ async def pre_checkout(q: PreCheckoutQuery):
 async def on_success(message: Message):
     payment = message.successful_payment
     user = message.from_user
+    print(str(payment))
 
-    total_amount = payment.total_amount / 100  # to‘liq summa
+    total_amount = payment.total_amount
     currency = payment.currency
     payload = payment.invoice_payload
     tg_charge = payment.telegram_payment_charge_id
@@ -55,14 +56,14 @@ async def on_success(message: Message):
     print(f"Payload: {payload}")
     print(f"Telegram charge ID: {tg_charge}")
     print(f"Provider charge ID: {prov_charge}")
-    print(f"Amount paid: {int(total_amount * 100)} {currency}")
+    print(f"Amount paid: {total_amount} {currency}")
     print("===========================")
 
     text = (
         f"✅ <b>Payment successful!</b>\n\n"
         f"👤 <b>User:</b> {user.full_name} (<code>{user.id}</code>)\n"
         f"💎 <b>Product:</b> <code>{payload}</code>\n"
-        f"💰 <b>Amount:</b> <code>{int(total_amount * 100)} {currency}</code>\n\n"
+        f"💰 <b>Amount:</b> <code>{total_amount}{currency}</code>\n\n"
         f"🎉 Your item has been activated. Thank you!"
     )
     await message.answer(text, parse_mode="HTML")
@@ -76,15 +77,17 @@ async def refund_command(message: Message):
         "stxTpv3jVy1tomna5RHVGUqkTVjwFP4glNH31ueOBN8smBNdX8kMLwRzNS6-musRbV-crqvHiX19UlOMWcEG40_1WG7sV13KcUlMIijEym_5AiypS5BpUbHhq-j9xlxLTMI",
     ]
     user_id = message.from_user.id
-
-    for charge_id in charge_ids:
-        result = await bot(
-            RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
-        )
-        if result:
-            await message.answer("✅ Refund has been made. Please check your account.")
-        else:
-            await message.answer("❌ Refund failed. Please try again later.")
+    try:
+        for charge_id in charge_ids:
+            result = await bot(
+                RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
+            )
+            if result:
+                await message.answer("✅ Refund has been made. Please check your account.")
+            else:
+                await message.answer("❌ Refund failed. Please try again later.")
+    except Exception as e:
+        await message.answer(f"❌ An error occurred: {str(e)}")
 
 
 async def main():

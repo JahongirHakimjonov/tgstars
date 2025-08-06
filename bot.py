@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher, types, Router
 from aiogram.enums import ParseMode
 from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
 
-bot = Bot(token="7919086638:AAHBFMgyxvIKskatxodF6pESKvVlucsWOrk")
+bot = Bot(token="7919086638:AAHnP3_ZoHweJK7nQki-QX-z0QdgrolMOLI")
 dp = Dispatcher()
 router = Router()
 

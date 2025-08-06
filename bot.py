@@ -5,7 +5,7 @@ from aiogram.types import (
     Message,
     WebAppInfo,
     InlineKeyboardMarkup,
-    InlineKeyboardButton,
+    InlineKeyboardButton, LabeledPrice, InlineQueryResultUnion
 )
 from dotenv import load_dotenv
 
@@ -48,8 +48,35 @@ async def on_success(message: Message):
         f"💰 <b>Amount paid:</b> <code>{total_amount:.2f} {currency}</code>\n\n"
         f"🎉 Your item has been activated. Thank you!"
     )
+    print("=======================================")
+    print(f"User: {user.full_name} ({user.id})")
+    print(f"Product: {payload}")
+    print(f"Amount paid: {total_amount:.2f} {currency}")
+    print("=======================================")
 
     await message.answer(text, parse_mode="HTML")
+
+@dp.message(F.web_app_data)
+async def webapp_handler(message: Message):
+    query_id = message.web_app_data.query_id
+    data = message.web_app_data.data
+    prices = [LabeledPrice(label="Buy Diamond", amount=1)]
+    await bot.answer_web_app_query(
+        web_app_query_id=query_id,
+        result=InlineQueryResultUnion(  # aiogram.types.inline_query_result.InlineQueryResultInvoice
+            id=query_id,
+            title="Diamond",
+            description="Purchase a diamond",
+            payload=data,
+            provider_token="",
+            currency="XTR",
+            prices=prices,
+        ),
+    )
+    print("=================================")
+    print(data)
+    print("=================================")
+
 
 
 async def main():

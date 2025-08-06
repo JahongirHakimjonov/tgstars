@@ -4,8 +4,11 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.methods import RefundStarPayment
 from aiogram.types import (
-    Message, PreCheckoutQuery, WebAppInfo,
-    InlineKeyboardMarkup, InlineKeyboardButton
+    Message,
+    PreCheckoutQuery,
+    WebAppInfo,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
 )
 from dotenv import load_dotenv
 
@@ -19,12 +22,14 @@ dp = Dispatcher()
 @dp.message(F.text == "/start")
 async def start(message: Message):
     kb = InlineKeyboardMarkup(
-        inline_keyboard=[[
-            InlineKeyboardButton(
-                text="Buy Diamond ⭐",
-                web_app=WebAppInfo(url="https://tgstar.milliytech.uz/webapp")
-            )
-        ]]
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Buy Diamond ⭐",
+                    web_app=WebAppInfo(url="https://tgstar.milliytech.uz/webapp"),
+                )
+            ]
+        ]
     )
     await message.answer("Welcome! Click below to buy with Stars:", reply_markup=kb)
 
@@ -65,17 +70,21 @@ async def on_success(message: Message):
 
 @dp.message(Command("refund"))
 async def refund_command(message: Message):
-    charge_id = "stxSyfQjLjDdiLSKFpWzBDHZQVeUZTTT7guwmnhsqs-RrJZrzWe_eQ0BU_Gmz2voBlNUSu1BYnVuFoNyJetu7KPgdyHec4VyGSNQVzTwQMLdJ1athcM9JWqAyQvcqa7RttC"
-    user_id = "1905881970"
+    charge_ids = [
+        "stxJCpqI0VYGFDMiMgy0sBFvHT5OM5kT5yUH4KrOODEOoFIOGC-kIOtSR0fIpphCFyTNfLyD4idM1ZDY_SCtJaqV0eYlfMnlnaSUwDv5LxlNFRQCg0pBNz2e4nPqw73nhv5",
+        "stxkiMEHR6jzGLvtdm4Wjo6XnehXDkY-MVVfiXXH7xCBXDZ8x6jw6xRBTje-mZCgbZEQHDD4o21lx2Ga9Ys5O_0SgPcl3xerIGAdStIDdU7L9eFNgirgkrlJUpvwd_HU5u3",
+        "stxTpv3jVy1tomna5RHVGUqkTVjwFP4glNH31ueOBN8smBNdX8kMLwRzNS6-musRbV-crqvHiX19UlOMWcEG40_1WG7sV13KcUlMIijEym_5AiypS5BpUbHhq-j9xlxLTMI",
+    ]
+    user_id = message.from_user.id
 
-    result = await bot(RefundStarPayment(
-        user_id=user_id,
-        telegram_payment_charge_id=charge_id
-    ))
-    if result:
-        await message.answer("✅ Refund has been made. Please check your account.")
-    else:
-        await message.answer("❌ Refund failed. Please try again later.")
+    for charge_id in charge_ids:
+        result = await bot(
+            RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
+        )
+        if result:
+            await message.answer("✅ Refund has been made. Please check your account.")
+        else:
+            await message.answer("❌ Refund failed. Please try again later.")
 
 
 async def main():

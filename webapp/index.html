@@ -120,11 +120,11 @@
                     if (data.status === "ok" && data.slug) {
                         Telegram.WebApp.openInvoice(data.slug);
                     } else {
-                        showMessage("❌ Could not create invoice.", true);
+                        showMessage("❌ " + (data || "Unknown error occurred."), true);
                     }
                 })
-                .catch(() => {
-                    showMessage("❌ Error occurred during request.", true);
+                .catch((error) => {
+                    showMessage("❌ " + (error.message || "Error occurred during request."), true);
                 })
                 .finally(() => {
                     mainBtn.setText("Buy with 5 Stars");

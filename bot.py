@@ -1,7 +1,12 @@
 import os
 
 from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    Message,
+    WebAppInfo,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,12 +19,16 @@ dp = Dispatcher()
 
 @dp.message(F.text == "/start")
 async def start(message: Message):
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(
-            text="Buy Diamond ⭐",
-            web_app=WebAppInfo(url="https://tgstar.milliytech.uz/webapp")
-        )]
-    ])
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Buy Diamond ⭐",
+                    web_app=WebAppInfo(url="https://tgstar.milliytech.uz/webapp"),
+                )
+            ]
+        ]
+    )
     await message.answer("Welcome! Click below to buy with Stars:", reply_markup=kb)
 
 

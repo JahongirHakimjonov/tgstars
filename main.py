@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from bot import dp, bot
 from services import CreateInvoiceService
+from services import get_invoice_service
 
 app = FastAPI()
 
@@ -32,17 +33,16 @@ async def serve_webapp():
 
 
 @app.post("/api/pay")
-async def pay(data: PayRequest, invoice: CreateInvoiceService = Depends()):
+async def pay(
+    data: PayRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
+):
     user_id = data.user_id
     username = data.username
     full_name = data.full_name
 
     print(f"Payment received from user {user_id} ({username}, {full_name})")
     invoice_url = await invoice.create_invoice(user_id, username, full_name)
-    return JSONResponse({
-        "status": "ok",
-        "invoice_url": f"{invoice_url}"
-    })
+    return JSONResponse({"status": "ok", "invoice_url": f"{invoice_url}"})
 
 
 @app.on_event("startup")

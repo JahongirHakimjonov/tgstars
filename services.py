@@ -1,6 +1,8 @@
 from aiogram import Bot
 from aiogram.types import LabeledPrice
 
+from bot import bot
+
 
 class CreateInvoiceService:
     def __init__(self, bot: Bot):
@@ -26,8 +28,11 @@ class CreateInvoiceService:
             prices=prices,
             photo_url=photo_url,
             photo_width=photo_width,
-            photo_height=photo_height
+            photo_height=photo_height,
         )
 
         return invoice_url
 
+
+def get_invoice_service():
+    return CreateInvoiceService(bot=bot)

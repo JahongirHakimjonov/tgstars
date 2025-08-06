@@ -1,26 +1,43 @@
 import asyncio
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse
+from pydantic import BaseModel
 
 from bot import dp, bot
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/webapp", response_class=HTMLResponse)
+async def serve_webapp():
+    with open("webapp/index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+
+class PayRequest(BaseModel):
+    user_id: int
+    username: str | None
+    full_name: str | None
+
 
 @app.post("/api/pay")
-async def handle_stars_payment(request: Request):
-    data = await request.json()
-    user_id = data.get("user_id")
-    username = data.get("username")
-    full_name = data.get("full_name")
-
-    # You can add Telegram WebApp initData verification here if needed
-
-    print(f"[✅] Stars payment received from {username} ({user_id}) - {full_name}")
-
-    # Here you would normally store to DB, update user balance, etc.
-    return JSONResponse({"status": "ok"})
+async def pay(data: PayRequest):
+    # Normally you'd validate user, log transaction, check inventory, etc.
+    print(data)
+    return JSONResponse({
+        "status": "ok",
+        "slug": "buy_diamond_5_stars"  # Must be pre-configured in Telegram Stars
+    })
 
 
 @app.on_event("startup")

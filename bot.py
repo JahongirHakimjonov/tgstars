@@ -1,21 +1,37 @@
-from aiogram import Bot, Dispatcher, types, Router
-from aiogram.enums import ParseMode
-from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
+import asyncio
+import logging
+import os
 
-bot = Bot(token="7919086638:AAHnP3_ZoHweJK7nQki-QX-z0QdgrolMOLI")
+from aiogram import Bot, Dispatcher, F
+from aiogram.types import Message, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
-router = Router()
 
 
-@router.message()
-async def start(message: types.Message):
+@dp.message(F.text == "/start")
+async def start(message: Message):
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
-            text="Open WebApp",
-            web_app=WebAppInfo(url="https://tgstar.milliytech.uz")  # Update to your domain
+            text="Buy Diamond ⭐",
+            web_app=WebAppInfo(url="https://tgstar.milliytech.uz/webapp")
         )]
     ])
-    await message.answer("Click below to open the store and pay with Stars!", reply_markup=kb)
+    await message.answer("Welcome! Click below to buy with Stars:", reply_markup=kb)
 
 
-dp.include_router(router)
+@dp.message(F.successful_payment)
+async def on_success(message: Message):
+    await message.answer("✅ Payment successful! Your item is now activated.")
+    # Optional: write to database or grant access
+
+
+async def main():
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    asyncio.run(main())

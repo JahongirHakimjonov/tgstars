@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Buy Gold with Stars</title>
+    <title>Buy Diamond with Stars</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -17,7 +17,7 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
@@ -28,50 +28,47 @@
         }
 
         .container {
-            padding: 24px;
+            background: #f9f9f9;
+            padding: 30px 24px;
             max-width: 400px;
-            width: 100%;
+            width: 90%;
             text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
         }
 
-        h1 {
-            font-size: 24px;
-            margin-bottom: 12px;
-        }
-
-        .gold-icon {
+        .icon {
             font-size: 64px;
             margin-bottom: 12px;
         }
 
+        h1 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
         p {
             color: var(--hint-color);
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 24px;
         }
 
-        .price-box {
+        .price {
             font-size: 18px;
-            margin-bottom: 16px;
-            font-weight: 600;
-        }
-
-        .stars {
+            font-weight: bold;
+            margin-bottom: 20px;
             display: inline-flex;
             align-items: center;
-            font-size: 16px;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .stars img {
-            width: 20px;
-            height: 20px;
+        .price img {
+            width: 22px;
+            height: 22px;
         }
 
         .status {
-            margin-top: 20px;
+            margin-top: 16px;
             font-size: 14px;
             color: green;
         }
@@ -79,49 +76,42 @@
 </head>
 <body>
 <div class="container">
-    <div class="gold-icon">💰</div>
-    <h1>Buy 100 Gold</h1>
-    <p>Make in-game purchases using Telegram Stars</p>
-
-    <div class="price-box">
-      <span class="stars">
-        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="stars"/>
-        50 Stars
-      </span>
+    <div class="icon">💎</div>
+    <h1>Buy 1 Diamond in OneGame</h1>
+    <p>Use Telegram Stars to purchase in-game currency</p>
+    <div class="price">
+        <img src="https://i.postimg.cc/Hx4m5Dbj/star.png" alt="star">
+        5 Stars
     </div>
-
     <div class="status" id="statusMsg"></div>
 </div>
 
 <script>
     Telegram.WebApp.ready();
     const user = Telegram.WebApp.initDataUnsafe.user;
-
-    Telegram.WebApp.MainButton.setText("Buy with 50 Stars");
+    Telegram.WebApp.MainButton.setText("Buy with 5 Stars");
     Telegram.WebApp.MainButton.show();
 
     Telegram.WebApp.MainButton.onClick(() => {
-        fetch("https://tgstarapi.milliytech.uz/api/pay", {
+        fetch("https://tgstar.milliytech.uz/api/pay", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 user_id: user.id,
                 username: user.username,
-                full_name: `${user.first_name} ${user.last_name || ""}`
+                full_name: `${user.first_name} ${user.last_name || ''}`
             })
         }).then(res => res.json())
             .then(data => {
-                if (data.status === "ok") {
-                    document.getElementById("statusMsg").textContent = "✅ Payment successful!";
-                    setTimeout(() => Telegram.WebApp.close(), 1500);
+                if (data.status === "ok" && data.slug) {
+                    Telegram.WebApp.openInvoice(data.slug);
                 } else {
-                    document.getElementById("statusMsg").textContent = "❌ Payment failed. Try again.";
+                    document.getElementById("statusMsg").innerText = "❌ Could not create invoice.";
                 }
-            }).catch(() => {
-            document.getElementById("statusMsg").textContent = "❌ Error occurred. Please try again.";
-        });
+            })
+            .catch(() => {
+                document.getElementById("statusMsg").innerText = "❌ Error occurred during request.";
+            });
     });
 </script>
 </body>

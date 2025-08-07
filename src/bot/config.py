@@ -1,6 +1,6 @@
 import os
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,4 +10,3 @@ if BOT_TOKEN is None:
     raise ValueError("BOT_TOKEN is not set in the environment variables")
 
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()

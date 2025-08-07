@@ -1,4 +1,4 @@
-from aiogram import F
+from aiogram import F, Router
 from aiogram.types import (
     Message,
     WebAppInfo,
@@ -7,10 +7,12 @@ from aiogram.types import (
     ReactionTypeEmoji,
 )
 
-from src.bot.config import dp, bot
+from src.bot.config import bot
+
+router = Router()
 
 
-@dp.message(F.text == "/start")
+@router.message(F.text == "/start")
 async def start(message: Message) -> None:
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -43,7 +45,7 @@ async def start(message: Message) -> None:
     )
 
 
-@dp.message(F.successful_payment)
+@router.message(F.successful_payment)
 async def on_success(message: Message) -> None:
     assert message.successful_payment is not None, "No successful_payment found"
     assert message.from_user is not None, "No from_user found"

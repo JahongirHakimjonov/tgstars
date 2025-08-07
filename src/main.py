@@ -1,12 +1,15 @@
 import asyncio
 
+from aiogram import Dispatcher
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src import bot as handlers
 from src.backend.api import router
-from src.bot.config import bot, dp
+from src.bot.config import bot
 
 app = FastAPI()
+dp = Dispatcher()
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,5 +24,6 @@ app.include_router(router)
 
 @app.on_event("startup")
 async def on_startup():
-    loop = asyncio.get_event_loop()
-    loop.create_task(dp.start_polling(bot))
+    await bot.delete_webhook(drop_pending_updates=True)
+    handlers.setup(dp)
+    await dp.start_polling(bot)

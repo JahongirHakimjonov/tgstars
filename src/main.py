@@ -26,4 +26,4 @@ app.include_router(router)
 async def on_startup():
     await bot.delete_webhook(drop_pending_updates=True)
     handlers.setup(dp)
-    await dp.start_polling(bot)
+    asyncio.create_task(dp.start_polling(bot))

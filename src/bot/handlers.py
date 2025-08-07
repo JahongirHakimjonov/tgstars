@@ -1,23 +1,13 @@
-import os
-
-from aiogram import Bot, Dispatcher, F
+from aiogram import F
 from aiogram.types import (
     Message,
-    PreCheckoutQuery,
     WebAppInfo,
     InlineKeyboardMarkup,
-    InlineKeyboardButton, ReactionTypeEmoji,
+    InlineKeyboardButton,
+    ReactionTypeEmoji,
 )
-from dotenv import load_dotenv
 
-load_dotenv()
-
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-if BOT_TOKEN is None:
-    raise ValueError("BOT_TOKEN is not set in the environment variables")
-
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+from src.bot.config import dp, bot
 
 
 @dp.message(F.text == "/start")
@@ -32,9 +22,17 @@ async def start(message: Message) -> None:
             ]
         ]
     )
-    caption = "Welcome! Click below to buy with Stars\n\nExchange your stars for joy! ✨ Unlock special items, features, or moments that bring happiness – all with your Telegram Stars. Treat yourself or surprise a friend!"
+    caption = (
+        "Welcome! Click below to buy with Stars\n\nExchange your stars for joy! ✨ "
+        "Unlock special items, features, or moments that bring happiness – "
+        "all with your Telegram Stars. "
+        "Treat yourself or surprise a friend!"
+    )
     await bot.set_message_reaction(
-        message.chat.id, message.message_id, [ReactionTypeEmoji(emoji="❤️")], is_big=True
+        message.chat.id,
+        message.message_id,
+        [ReactionTypeEmoji(emoji="❤️")],
+        is_big=True,
     )
     await bot.send_photo(
         chat_id=message.chat.id,
@@ -43,11 +41,6 @@ async def start(message: Message) -> None:
         reply_markup=kb,
         reply_to_message_id=message.message_id,
     )
-
-
-@dp.pre_checkout_query()
-async def pre_checkout(q: PreCheckoutQuery) -> None:
-    await q.answer(ok=True)
 
 
 @dp.message(F.successful_payment)
@@ -80,7 +73,3 @@ async def on_success(message: Message) -> None:
         f"🎉 Your item has been activated. Thank you!"
     )
     await message.answer(text, parse_mode="HTML")
-
-
-async def main() -> None:
-    await dp.start_polling(bot)

@@ -1,44 +1,19 @@
-import asyncio
-
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse
-from pydantic import BaseModel
 
-from bot import dp, bot
-from services import CreateInvoiceService
-from services import get_invoice_service
+from src.backend.schema import RefundRequest, PayRequest
+from src.bot.services import CreateInvoiceService, get_invoice_service
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+router = APIRouter()
 
 
-class PayRequest(BaseModel):
-    user_id: int
-    username: str
-    full_name: str
-    amount: int
-
-
-class RefundRequest(BaseModel):
-    user_id: int
-    charge_id: str
-
-
-@app.get("/webapp", response_class=HTMLResponse)
+@router.get("/webapp", response_class=HTMLResponse)
 async def serve_webapp() -> str:
-    with open("webapp/index.html", "r", encoding="utf-8") as f:
+    with open("src/web/index.html", "r", encoding="utf-8") as f:
         return f.read()
 
 
-@app.post("/api/pay")
+@router.post("/api/pay")
 async def pay(
     data: PayRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
 ) -> JSONResponse:
@@ -52,7 +27,7 @@ async def pay(
     return JSONResponse({"status": "ok", "invoice_url": f"{invoice_url}"})
 
 
-@app.post("/api/refund")
+@router.post("/api/refund")
 async def refund(
     data: RefundRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
 ) -> JSONResponse:
@@ -62,9 +37,3 @@ async def refund(
     print(f"Refund requested by user {user_id} (charge_id: {charge_id})")
     refund_status = await invoice.process_refund(user_id, charge_id)
     return JSONResponse({"status": "ok", "refund_status": refund_status})
-
-
-@app.on_event("startup")
-async def on_startup():
-    loop = asyncio.get_event_loop()
-    loop.create_task(dp.start_polling(bot))

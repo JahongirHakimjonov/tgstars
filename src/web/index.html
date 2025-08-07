@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buy Diamonds with Stars</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
     <link rel="icon" href="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" type="image/gif">
     <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #888888);
+            --button-color: var(--tg-theme-button-color, #2ea6ff);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --secondary_bg_color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            --section_separator_color: var(--tg-theme-section-separator-color, #e0e0e0);
+            --section_bg_color: var(--tg-theme-section-bg-color, #f9f9f9);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,7 +30,7 @@
         }
 
         .container {
-            background: white;
+            background-color: var(--section_bg_color);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -38,9 +50,9 @@
         }
 
         p {
+            color: var(--hint-color);
             font-size: 16px;
-            color: #666;
-            margin: 0 0 20px 0;
+            margin-bottom: 24px;
         }
 
         .input-group {
@@ -60,8 +72,10 @@
             padding: 10px;
             font-size: 16px;
             width: 100px;
-            border: 1px solid #ddd;
+            border: var(--section_separator_color);
             border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
         .status {
@@ -94,7 +108,7 @@
 <body>
 <div class="container fade-in">
     <div class="icon">
-        <img src="https://i.postimg.cc/28Wc42fv/utya-utya-duck.gif" alt="Diamond">
+        <img src="https://i.postimg.cc/BbzBXqGW/Utya-Duck-Ag-AD9w-ADVp29-Cg.gif" alt="Diamond">
     </div>
     <h1>Buy Diamonds in OneGame</h1>
     <p>Use Telegram Stars to purchase in-game currency</p>
@@ -130,7 +144,7 @@
         mainBtn.onClick(async () => {
             const amount = parseInt(amountInput.value, 10);
             showMessage('');
-            mainBtn.showProgress(true); // Progressni ko'rsatish
+            mainBtn.showProgress(true); // Показать прогресс
 
             try {
                 const res = await fetch('https://tgstar.milliytech.uz/api/pay', {
@@ -146,30 +160,30 @@
                 const data = await res.json();
                 if (data.status === 'ok' && data.invoice_url) {
                     Telegram.WebApp.openInvoice(data.invoice_url);
-                    // Progressni bu yerda yashirmaymiz, invoiceClosed ni kutamiz
+                    // Мы не скрываем здесь прогресс, мы ждем счет-фактуруЗакрыто
                 } else {
-                    showMessage('❌ ' + (data.message || 'Xatolik yuz berdi'), true);
-                    mainBtn.hideProgress(); // Xatolik bo'lsa progressni yashirish
+                    showMessage('❌ ' + (data.message || 'An error occurred.'), true);
+                    mainBtn.hideProgress(); // Скрыть прогресс, если есть ошибка
                     updateButton(amount);
                 }
             } catch (err) {
-                showMessage('❌ Tarmoq xatosi: ' + err.message, true);
-                mainBtn.hideProgress(); // Tarmoq xatosi bo'lsa progressni yashirish
+                showMessage('❌ Network error: ' + err.message, true);
+                mainBtn.hideProgress(); // Скрыть прогресс, если произошла ошибка сети
                 updateButton(amount);
             }
         });
 
         Telegram.WebApp.onEvent('invoiceClosed', function (object) {
-            mainBtn.hideProgress(); // Invoys yopilganda progressni yashirish
+            mainBtn.hideProgress(); // Скрыть ход выполнения при закрытии счета
             if (object.status === 'paid') {
-                showMessage('✅ To\'lov muvaffaqiyatli amalga oshirildi!', false);
+                showMessage('✅ Payment was successful!', false);
             } else {
-                showMessage('❌ To\'lov amalga oshmadi yoki bekor qilindi.', true);
+                showMessage('❌ The payment failed or was canceled.', true);
             }
             updateButton(parseInt(amountInput.value, 10));
         });
     } else {
-        showMessage('❌ Foydalanuvchi ma\'lumotlari yuklanmadi. Iltimos, qayta yuklang.', true);
+        showMessage('❌ User data could not be loaded. Please reload..', true);
     }
 
     function showMessage(msg, isError = false) {

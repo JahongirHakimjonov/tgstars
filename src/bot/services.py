@@ -4,14 +4,16 @@ from aiogram import Bot
 from aiogram.methods import RefundStarPayment
 from aiogram.types import LabeledPrice
 
-from bot import bot
+from src.bot.config import bot
 
 
 class CreateInvoiceService:
     def __init__(self, tg_bot: Bot):
         self.bot = tg_bot
 
-    async def create_invoice(self, user_id: int, username: str, full_name: str, amount: int) -> str:
+    async def create_invoice(
+        self, user_id: int, username: str, full_name: str, amount: int
+    ) -> str:
         images = [
             "https://i.postimg.cc/DwTdr6xW/download-6.jpg",
             "https://i.postimg.cc/JhTNWLMJ/download-7.jpg",
@@ -43,7 +45,7 @@ class CreateInvoiceService:
 
     async def process_refund(self, user_id: int, charge_id: str) -> bool:
         try:
-            result = await bot(
+            result = await self.bot(
                 RefundStarPayment(user_id=user_id, telegram_payment_charge_id=charge_id)
             )
             if result:

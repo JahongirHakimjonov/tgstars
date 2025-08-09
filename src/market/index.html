@@ -194,6 +194,7 @@
         }
 
         .btn {
+            min-width: 90px;
             padding: 10px 14px;
             border-radius: 12px;
             font-weight: 700;
@@ -201,6 +202,20 @@
             background: var(--accent);
             color: #fff;
             cursor: pointer;
+        }
+
+
+        /* Agar butunlay bir xil bo'lishini xohlasangiz */
+        #tgBuy, #shareCard {
+            width: 100%;
+        }
+
+        .btn-container {
+            min-width: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: stretch; /* tugmalar bir xil kenglikda bo‘ladi */
         }
 
         .icon-btn {
@@ -222,12 +237,12 @@
             <div class="desc" id="productDesc">Handmade full-grain leather — perfect for travel & business.</div>
             <div class="price" id="productPrice">$129.99</div>
         </div>
-        <div style="min-width:90px;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <div class="btn-container">
             <button id="tgBuy" class="btn">Buy</button>
-            <button id="shareCard" class="btn" style="background:#ccc;color:#000">Share</button>
+            <button id="shareCard" class="btn">Share</button>
         </div>
     </div>
-
+    <br>
     <div class="grid" id="grid">
         <!-- images inserted by JS -->
     </div>

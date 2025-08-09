@@ -647,7 +647,7 @@
             txt.innerHTML = `<div style="font-weight:800;color:var(--tg-text)">${p.title}</div><div style="color:var(--hint-color)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800;color:var(--tg-text)">${formatPrice(p.price)} x ${item.qty}</div>`;
             row.appendChild(txt);
             const actions = document.createElement('div');
-            actions.innerHTML = '<button style="background:transparent;border:0;font-size:18px;color:var(--tg-text)">❌</button>';
+            actions.innerHTML = '<button style="background:transparent;border:0;font-size:18px">❌</button>';
             actions.querySelector('button').addEventListener('click', () => {
                 removeFromCart(item)
             });
@@ -657,7 +657,7 @@
         const total = state.cart.reduce((s, i) => s + (DATA.products.find(p => p.id === i.productId).price * i.qty), 0);
         const tot = document.createElement('div');
         tot.style.marginTop = '12px';
-        tot.innerHTML = `<div style="font-weight:800;font-size:18px">Jami: ${formatPrice(total)}</div>`;
+        tot.innerHTML = `<div style="font-weight:800;font-size:18px;color:var(--tg-text)">Jami: ${formatPrice(total)}</div>`;
         wrap.appendChild(tot);
         const checkout = document.createElement('button');
         checkout.className = 'addbtn';

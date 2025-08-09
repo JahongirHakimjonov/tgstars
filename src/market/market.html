@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Tirikchilik — Telegram WebApp UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+    <style>
+        :root {
+            --bg: var(--tg-theme-bg-color, #ffffff);
+            --card: var(--tg-theme-section-bg-color, #f9f9f9);
+            --muted: #6b6f76;
+            --accent: var(--tg-theme-button-color, #2ea6ff); /* warm accent (like bot) */
+            --dark: #0f1720;
+            --soft: #f1f3f5;
+            --radius: 16px;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 10% 10%, rgba(42, 157, 244, 0.06), transparent 10%), var(--bg);
+            color: var(--dark);
+        }
+
+        .wrap {
+            max-width: 420px;
+            margin: 12px auto;
+            padding: 14px;
+            position: relative
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: -0.3px
+        }
+
+        .brand p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns:repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 14px
+        }
+
+        .product-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(250, 250, 250, 0.9));
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 10px 30px rgba(22, 30, 50, 0.06);
+            border: 1px solid rgba(15, 20, 25, 0.04);
+            cursor: pointer;
+            transition: transform .18s ease, box-shadow .18s ease
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(22, 30, 50, 0.09)
+        }
+
+        .product-top {
+            background: linear-gradient(180deg, #fbfbfb, #f7f7f8);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 120px
+        }
+
+        .product-top img {
+            max-width: 100%;
+            max-height: 96px;
+            object-fit: contain
+        }
+
+        .product-info {
+            margin-top: 10px
+        }
+
+        .product-price {
+            font-weight: 800;
+            font-size: 16px
+        }
+
+        .product-title {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 6px
+        }
+
+        /* bottom nav */
+        .bottom {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 18px;
+            width: 420px;
+            max-width: 96vw;
+            background: transparent
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: transparent
+        }
+
+        .tab {
+            flex: 1;
+            background: var(--card);
+            padding: 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(12, 16, 20, 0.06);
+            border: 1px solid rgba(15, 20, 25, 0.04);
+            transition: all .18s
+        }
+
+        .tab.active {
+            background: linear-gradient(180deg, var(--accent), #1b8ad8);
+            color: #fff;
+            box-shadow: 0 18px 40px rgba(240, 160, 20, 0.18);
+            transform: translateY(-6px)
+        }
+
+        .tab button {
+            background: none;
+            border: 0;
+            font-size: 18px
+        }
+
+        /* search area */
+        .search-wrap {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fff, #fbfbfb);
+            box-shadow: 0 8px 30px rgba(12, 16, 20, 0.04);
+            border: 1px solid rgba(12, 16, 20, 0.03)
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #e7ebf0;
+            background: transparent
+        }
+
+        .search-box button {
+            background: var(--accent);
+            border: 0;
+            padding: 8px 12px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 700
+        }
+
+        /* categories */
+        .cat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px
+        }
+
+        .category {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fff, #fcfcfd);
+            box-shadow: 0 8px 20px rgba(12, 16, 20, 0.03);
+            border: 1px solid rgba(12, 16, 20, 0.03)
+        }
+
+        .category img {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 10px
+        }
+
+        .category h3 {
+            margin: 0
+        }
+
+        .category p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        /* modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.35));
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 20px
+        }
+
+        .modal-panel {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 40px 80px rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(10, 14, 20, 0.04)
+        }
+
+        .modal-hero {
+            display: flex;
+            gap: 18px
+        }
+
+        .modal-left img {
+            width: 100%;
+            height: 320px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: var(--soft);
+            padding: 12px
+        }
+
+        .modal-right {
+            flex: 1
+        }
+
+        .label {
+            font-weight: 700;
+            margin-top: 10px
+        }
+
+        .colors {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px
+        }
+
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(10, 14, 20, 0.06)
+        }
+
+        .color-swatch.active {
+            outline: 3px solid rgba(42, 157, 244, 0.15)
+        }
+
+        .sizes {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap
+        }
+
+        .size {
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: var(--soft);
+            cursor: pointer;
+            border: 1px solid transparent
+        }
+
+        .size.active {
+            background: var(--accent);
+            color: #fff
+        }
+
+        .addbtn {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 12px;
+            border: 0;
+            background: linear-gradient(90deg, var(--accent), #1b8ad8);
+            color: #fff;
+            width: 100%;
+            font-weight: 800;
+            box-shadow: 0 14px 40px rgba(26, 138, 216, 0.18)
+        }
+
+        /* cart */
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fff, #fbfbfc);
+            border: 1px solid rgba(12, 16, 20, 0.03)
+        }
+
+        .cart-item img {
+            width: 88px;
+            height: 88px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: var(--soft);
+            padding: 8px
+        }
+
+        .empty {
+            padding: 40px;
+            text-align: center;
+            color: var(--muted)
+        }
+
+        .badge {
+            background: #ff4d4f;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: 700
+        }
+
+        @media (max-width: 460px) {
+            .wrap {
+                padding: 10px
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap" id="app">
+    <header>
+        <div style="flex:1">
+            <div class="brand">
+                <h1>Tirikchilik.uz</h1>
+                <p>@tirikchilik_bot • kiyimlar</p>
+            </div>
+        </div>
+        <div>
+            <button id="openTelegram"
+                    style="padding:8px 10px;border-radius:10px;border:1px solid rgba(12,16,20,0.04);background:linear-gradient(180deg,#fff,#f7f8fb);">
+                Open
+            </button>
+        </div>
+    </header>
+
+    <main id="mainContent"></main>
+
+    <div class="bottom">
+        <div class="tabs">
+            <div class="tab" data-tab="latest">
+                <button title="Latest">🏠</button>
+            </div>
+            <div class="tab" data-tab="search">
+                <button title="Search">🔍</button>
+            </div>
+            <div class="tab" data-tab="categories">
+                <button title="Categories">▦</button>
+            </div>
+            <div class="tab" data-tab="cart">
+                <button title="Cart">🛒 <span id="cartCount"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+    // --- SAMPLE DATA --- (unchanged, use your real API in production)
+    const DATA = {
+        categories: [
+            {
+                id: 'men',
+                name: 'Erkaklar',
+                img: 'https://i.postimg.cc/T3HZ6NLt/photo-2025-08-06-19-23-14.jpg'
+            },
+            {
+                id: 'women',
+                name: 'Ayollar',
+                img: 'https://i.postimg.cc/T3HZ6NLt/photo-2025-08-06-19-23-14.jpg'
+            }
+        ],
+        products: [
+            {
+                id: 'p1',
+                title: 'Hayot T-Shirt',
+                price: 250000,
+                category: 'men',
+                type: 'tshirt',
+                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+                description: 'Hayot — bu o‘z qadrini bilish :) Futbolka 100% paxta',
+                colors: [{name: 'Lavender', hex: '#c09dd9', sizes: ['S', 'M', 'L']}, {
+                    name: 'Lilac',
+                    hex: '#9b6fa8',
+                    sizes: ['M', 'L']
+                }]
+            },
+            {
+                id: 'p2',
+                title: 'Katakli ko\'ylak',
+                price: 200000,
+                category: 'men',
+                type: 'shirt',
+                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+                description: 'Qulay katakli ko\'ylak. 60% paxta.',
+                colors: [{name: 'Brown', hex: '#c58c6b', sizes: ['M', 'L', 'XL']}, {
+                    name: 'Grey',
+                    hex: '#d1d3d6',
+                    sizes: ['S', 'M']
+                }]
+            },
+            {
+                id: 'p3',
+                title: 'Kepka',
+                price: 150000,
+                category: 'men',
+                type: 'cap',
+                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+                description: 'Stylish kepka. Oson kiyiladi.',
+                colors: [{name: 'Maroon', hex: '#7a2436', sizes: []}, {name: 'Beige', hex: '#cbbfae', sizes: []}]
+            },
+            {
+                id: 'p4',
+                title: 'Basic Tee',
+                price: 230000,
+                category: 'women',
+                type: 'tshirt',
+                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+                description: 'Oddiy va qulay. 100% paxta',
+                colors: [{name: 'White', hex: '#ffffff', sizes: ['S', 'M', 'L']}, {
+                    name: 'Pink',
+                    hex: '#f6c6d0',
+                    sizes: ['S', 'M']
+                }]
+            }
+        ]
+    }
+
+    // --- STATE ---
+    let state = {tab: 'latest', query: '', cart: [], modal: null}
+
+    function loadCart() {
+        try {
+            state.cart = JSON.parse(localStorage.getItem('tg_webapp_cart') || '[]')
+        } catch (e) {
+            state.cart = []
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem('tg_webapp_cart', JSON.stringify(state.cart));
+        updateCartCount()
+    }
+
+    function updateCartCount() {
+        const el = document.getElementById('cartCount');
+        const total = state.cart.reduce((s, i) => s + i.qty, 0);
+        el.innerHTML = total ? `<span class="badge">${total}</span>` : ''
+    }
+
+    function formatPrice(v) {
+        return v.toLocaleString('ru-RU') + ' UZS'
+    }
+
+    // --- RENDER ---
+    function render() {
+        const main = document.getElementById('mainContent');
+        main.innerHTML = '';
+        if (state.tab === 'latest') renderLatest(main);
+        if (state.tab === 'search') renderSearch(main);
+        if (state.tab === 'categories') renderCategories(main);
+        if (state.tab === 'cart') renderCart(main);
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === state.tab));
+    }
+
+    function renderLatest(container) {
+        const grid = document.createElement('div');
+        grid.className = 'card-grid';
+        DATA.products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            const top = document.createElement('div');
+            top.className = 'product-top';
+            const img = document.createElement('img');
+            img.src = p.images[0];
+            top.appendChild(img);
+            card.appendChild(top);
+            const info = document.createElement('div');
+            info.className = 'product-info';
+            const price = document.createElement('div');
+            price.className = 'product-price';
+            price.textContent = formatPrice(p.price);
+            info.appendChild(price);
+            const title = document.createElement('div');
+            title.className = 'product-title';
+            title.textContent = p.title;
+            info.appendChild(title);
+            card.appendChild(info);
+            card.addEventListener('click', () => openProduct(p.id));
+            grid.appendChild(card);
+        });
+        container.appendChild(grid);
+    }
+
+    function renderSearch(container) {
+        const wrap = document.createElement('div');
+        wrap.className = 'search-wrap';
+        const box = document.createElement('div');
+        box.className = 'search-box';
+        const input = document.createElement('input');
+        input.placeholder = "So'rovingiz";
+        input.value = state.query;
+        input.addEventListener('input', e => state.query = e.target.value);
+        const btn = document.createElement('button');
+        btn.textContent = 'Search';
+        btn.addEventListener('click', () => doSearch(state.query));
+        box.appendChild(input);
+        box.appendChild(btn);
+        wrap.appendChild(box);
+        const results = document.createElement('div');
+        results.id = 'searchResults';
+        results.style.marginTop = '14px';
+        wrap.appendChild(results);
+        container.appendChild(wrap);
+    }
+
+    function doSearch(q) {
+        const el = document.getElementById('searchResults');
+        el.innerHTML = '';
+        if (!q) {
+            el.innerHTML = '<div class="empty">So‘rov kiriting</div>';
+            return
+        }
+        const found = DATA.products.filter(p => p.title.toLowerCase().includes(q.toLowerCase()) || p.description.toLowerCase().includes(q.toLowerCase()));
+        if (found.length === 0) {
+            el.innerHTML = '<div class="empty">Hech nima topilmadi</div>';
+            return
+        }
+        const grid = document.createElement('div');
+        grid.className = 'card-grid';
+        found.forEach(p => {
+            const c = document.createElement('div');
+            c.className = 'product-card';
+            const top = document.createElement('div');
+            top.className = 'product-top';
+            const img = document.createElement('img');
+            img.src = p.images[0];
+            top.appendChild(img);
+            c.appendChild(top);
+            const info = document.createElement('div');
+            info.className = 'product-info';
+            info.appendChild(Object.assign(document.createElement('div'), {
+                className: 'product-price',
+                textContent: formatPrice(p.price)
+            }));
+            info.appendChild(Object.assign(document.createElement('div'), {
+                className: 'product-title',
+                textContent: p.title
+            }));
+            c.appendChild(info);
+            c.addEventListener('click', () => openProduct(p.id));
+            grid.appendChild(c)
+        });
+        el.appendChild(grid)
+    }
+
+    function renderCategories(container) {
+        const list = document.createElement('div');
+        list.className = 'cat-list';
+        DATA.categories.forEach(cat => {
+            const item = document.createElement('div');
+            item.className = 'category';
+            const img = document.createElement('img');
+            img.src = cat.img;
+            item.appendChild(img);
+            const txt = document.createElement('div');
+            txt.innerHTML = `<h3>${cat.name}</h3><p>${DATA.products.filter(p => p.category === cat.id).length} mahsulot</p>`;
+            item.appendChild(txt);
+            item.addEventListener('click', () => openCategory(cat.id));
+            list.appendChild(item)
+        });
+        container.appendChild(list);
+    }
+
+    function renderCart(container) {
+        const wrap = document.createElement('div');
+        wrap.style.marginTop = '12px';
+        if (state.cart.length === 0) {
+            wrap.innerHTML = '<div class="empty">Savat bo\'sh</div>';
+            container.appendChild(wrap);
+            return
+        }
+        state.cart.forEach(item => {
+            const p = DATA.products.find(x => x.id === item.productId);
+            const row = document.createElement('div');
+            row.className = 'cart-item';
+            const img = document.createElement('img');
+            img.src = p.images[0];
+            row.appendChild(img);
+            const txt = document.createElement('div');
+            txt.style.flex = '1';
+            txt.innerHTML = `<div style="font-weight:800">${p.title}</div><div style="color:var(--muted)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800">${formatPrice(p.price)} x ${item.qty}</div>`;
+            row.appendChild(txt);
+            const actions = document.createElement('div');
+            actions.innerHTML = '<button style="background:transparent;border:0;font-size:18px">❌</button>';
+            actions.querySelector('button').addEventListener('click', () => {
+                removeFromCart(item)
+            });
+            row.appendChild(actions);
+            wrap.appendChild(row)
+        });
+        const total = state.cart.reduce((s, i) => s + (DATA.products.find(p => p.id === i.productId).price * i.qty), 0);
+        const tot = document.createElement('div');
+        tot.style.marginTop = '12px';
+        tot.innerHTML = `<div style="font-weight:800;font-size:18px">Jami: ${formatPrice(total)}</div>`;
+        wrap.appendChild(tot);
+        const checkout = document.createElement('button');
+        checkout.className = 'addbtn';
+        checkout.textContent = 'Buyurtma berish';
+        checkout.addEventListener('click', () => {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const payload = {cart: state.cart, total};
+                window.Telegram.WebApp.MainButton.setText('Buyurtmani yuborish');
+                window.Telegram.WebApp.MainButton.show();
+                window.Telegram.WebApp.onEvent('mainButtonClicked', () => {
+                    window.Telegram.WebApp.sendData(JSON.stringify(payload));
+                    alert('Buyurtma yuborildi')
+                });
+            } else alert('Buyurtma: ' + JSON.stringify({cart: state.cart, total}));
+        });
+        wrap.appendChild(checkout);
+        container.appendChild(wrap);
+    }
+
+    // --- CATEGORY -> TYPE -> PRODUCTS flow ---
+    function openCategory(catId) {
+        const types = [...new Set(DATA.products.filter(p => p.category === catId).map(p => p.type))];
+        const main = document.getElementById('mainContent');
+        main.innerHTML = '';
+        const back = document.createElement('button');
+        back.textContent = '⬅ Orqaga';
+        back.addEventListener('click', () => {
+            state.tab = 'categories';
+            render()
+        });
+        main.appendChild(back);
+        const h = document.createElement('h2');
+        h.textContent = 'Turlar';
+        main.appendChild(h);
+        const wrap = document.createElement('div');
+        wrap.style.display = 'flex';
+        wrap.style.flexDirection = 'column';
+        wrap.style.gap = '10px';
+        wrap.style.marginTop = '12px';
+        types.forEach(t => {
+            const div = document.createElement('div');
+            div.className = 'category';
+            div.innerHTML = `<img src='https://via.placeholder.com/120?text=${t}' /><div style='font-weight:800'>${t}</div><div style='color:var(--muted);font-size:13px'>${DATA.products.filter(p => p.category === catId && p.type === t).length} ta</div>`;
+            div.addEventListener('click', () => openType(catId, t));
+            wrap.appendChild(div)
+        });
+        main.appendChild(wrap)
+    }
+
+    function openType(catId, type) {
+        const prods = DATA.products.filter(p => p.category === catId && p.type === type);
+        const main = document.getElementById('mainContent');
+        main.innerHTML = '';
+        const back = document.createElement('button');
+        back.textContent = '⬅ Orqaga';
+        back.addEventListener('click', () => openCategory(catId));
+        main.appendChild(back);
+        const grid = document.createElement('div');
+        grid.className = 'card-grid';
+        grid.style.marginTop = '12px';
+        prods.forEach(p => {
+            const c = document.createElement('div');
+            c.className = 'product-card';
+            const top = document.createElement('div');
+            top.className = 'product-top';
+            const img = document.createElement('img');
+            img.src = p.images[0];
+            top.appendChild(img);
+            c.appendChild(top);
+            const info = document.createElement('div');
+            info.className = 'product-info';
+            info.appendChild(Object.assign(document.createElement('div'), {
+                className: 'product-price',
+                textContent: formatPrice(p.price)
+            }));
+            info.appendChild(Object.assign(document.createElement('div'), {
+                className: 'product-title',
+                textContent: p.title
+            }));
+            c.appendChild(info);
+            c.addEventListener('click', () => openProduct(p.id));
+            grid.appendChild(c)
+        });
+        main.appendChild(grid)
+    }
+
+    // --- PRODUCT MODAL ---
+    function openProduct(id) {
+        const p = DATA.products.find(x => x.id === id);
+        if (!p) return;
+        state.modal = {productId: id, selectedColorIndex: 0, selectedSize: null, qty: 1};
+        renderModal(p)
+    }
+
+    function closeModal() {
+        state.modal = null;
+        document.getElementById('modalRoot').innerHTML = ''
+    }
+
+    function renderModal(p) {
+        const root = document.getElementById('modalRoot');
+        root.innerHTML = '';
+        const modal = document.createElement('div');
+        modal.className = 'modal-backdrop';
+        modal.addEventListener('click', e => {
+            if (e.target === modal) closeModal()
+        });
+        const panel = document.createElement('div');
+        panel.className = 'modal-panel';
+        const hero = document.createElement('div');
+        hero.className = 'modal-hero';
+        const left = document.createElement('div');
+        left.className = 'modal-left';
+        const img = document.createElement('img');
+        img.src = p.images[0];
+        left.appendChild(img);
+        const right = document.createElement('div');
+        right.className = 'modal-right';
+        const title = document.createElement('h3');
+        title.textContent = p.title + ' • ' + formatPrice(p.price);
+        right.appendChild(title);
+        const desc = document.createElement('div');
+        desc.style.color = 'var(--muted)';
+        desc.style.marginTop = '8px';
+        desc.textContent = p.description;
+        right.appendChild(desc);
+        const clabel = document.createElement('div');
+        clabel.className = 'label';
+        clabel.textContent = 'Rangni tanlang';
+        right.appendChild(clabel);
+        const colorsDiv = document.createElement('div');
+        colorsDiv.className = 'colors';
+        p.colors.forEach((c, i) => {
+            const s = document.createElement('div');
+            s.className = 'color-swatch';
+            s.style.background = c.hex;
+            if (i === state.modal.selectedColorIndex) s.classList.add('active');
+            s.title = c.name;
+            s.addEventListener('click', () => {
+                state.modal.selectedColorIndex = i;
+                state.modal.selectedSize = null;
+                renderModal(p)
+            });
+            colorsDiv.appendChild(s)
+        });
+        right.appendChild(colorsDiv);
+        const slabel = document.createElement('div');
+        slabel.className = 'label';
+        slabel.textContent = 'O\'lchamni tanlang';
+        right.appendChild(slabel);
+        const sizesDiv = document.createElement('div');
+        sizesDiv.className = 'sizes';
+        const sizes = p.colors[state.modal.selectedColorIndex].sizes;
+        if (sizes.length === 0) {
+            sizesDiv.innerHTML = '<div style="color:var(--muted)">Bu mahsulot uchun o\'lcham talab qilinmaydi</div>'
+        }
+        sizes.forEach(sz => {
+            const item = document.createElement('div');
+            item.className = 'size';
+            item.textContent = sz;
+            if (state.modal.selectedSize === sz) item.classList.add('active');
+            item.addEventListener('click', () => {
+                state.modal.selectedSize = sz;
+                renderModal(p)
+            });
+            sizesDiv.appendChild(item)
+        });
+        right.appendChild(sizesDiv);
+        const addBtn = document.createElement('button');
+        addBtn.className = 'addbtn';
+        const canAdd = (sizes.length === 0) || state.modal.selectedSize;
+        addBtn.textContent = 'Qo\'shish';
+        addBtn.disabled = !canAdd;
+        if (!canAdd) addBtn.style.opacity = 0.6;
+        addBtn.addEventListener('click', () => {
+            const colorObj = p.colors[state.modal.selectedColorIndex];
+            addToCart(p.id, colorObj, state.modal.selectedSize || null);
+            closeModal();
+            state.tab = 'cart';
+            render()
+        });
+        right.appendChild(addBtn);
+        hero.appendChild(left);
+        hero.appendChild(right);
+        panel.appendChild(hero);
+        const closeBtn = document.createElement('div');
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.right = '28px';
+        closeBtn.style.top = '28px';
+        closeBtn.innerHTML = '<button style="border-radius:50%;padding:8px 10px">✖</button>';
+        closeBtn.querySelector('button').addEventListener('click', closeModal);
+        panel.appendChild(closeBtn);
+        modal.appendChild(panel);
+        root.appendChild(modal)
+    }
+
+    // --- CART ACTIONS ---
+    function addToCart(productId, colorObj, size) {
+        const existing = state.cart.find(i => i.productId === productId && i.color.name === colorObj.name && i.size === size);
+        if (existing) {
+            existing.qty += 1
+        } else {
+            state.cart.push({productId, color: colorObj, size, qty: 1})
+        }
+        saveCart();
+        alert('Mahsulot savatga qo\'shildi')
+    }
+
+    function removeFromCart(item) {
+        const idx = state.cart.indexOf(item);
+        if (idx > -1) state.cart.splice(idx, 1);
+        saveCart();
+        render()
+    }
+
+    // --- INIT ---
+    function init() {
+        loadCart();
+        updateCartCount();
+        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+            state.tab = t.dataset.tab;
+            render()
+        }));
+        document.getElementById('openTelegram').addEventListener('click', () => {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.expand()
+            } else alert('Telegram WebApp muhitida oching')
+        });
+        render();
+        if (window.Telegram && window.Telegram.WebApp) {
+            try {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.MainButton.hide()
+            } catch (e) {
+            }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

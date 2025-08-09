@@ -15,7 +15,7 @@ async def serve_webapp() -> str:
 
 @router.get("/market", response_class=HTMLResponse)
 async def serve_webapp() -> str:
-    with open("src/market/index.html", "r", encoding="utf-8") as f:
+    with open("src/market/market.html", "r", encoding="utf-8") as f:
         return f.read()
 
 

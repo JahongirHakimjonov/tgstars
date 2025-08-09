@@ -354,7 +354,7 @@
             img.dataset.src = it.thumb;
             img.alt = it.title;
             img.loading = 'lazy';
-            img.style.display = 'none';
+            // img.style.display = 'none';
             img.addEventListener('load', () => {
                 skeleton.remove();
                 img.style.display = 'block';

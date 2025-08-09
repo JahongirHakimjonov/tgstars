@@ -11,25 +11,17 @@
     <style>
         :root {
             /* Telegram theme variables (fallbacks provided) */
-            /*--tg-bg: #f6f8fb;*/
-            /*--tg-card: #ffffff;*/
-            /*--tg-text: #0f1724;*/
-            /*--tg-hint: #6b7280;*/
-            /*--tg-accent: #2a9df4;*/
+            --bg: var(--tg-theme-bg-color);
+            --card: var(--tg-theme-section-bg-color);
+            --text: var(--tg-theme-text-color);
+            --hint: var(--tg-theme-hint-color);
+            --accent: var(--tg-theme-button-color);
             --radius: 14px;
             --soft: #f4f6f8;
             --max-width: 420px;
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
         }
 
-        /* Respect Telegram dynamic colors if available */
-        .tg-theme-aware {
-            --bg: var(--tg-theme-bg-color);
-            --card: var(--tg-theme-section-bg-color);
-            --text: var(--tg-theme-text-color);
-            --hint: var(--tg-theme-hint-color);
-            --accent: var(--tg-theme-button-color);
-        }
 
         * {
             box-sizing: border-box
@@ -435,7 +427,7 @@
         }
     </style>
 </head>
-<body class="tg-theme-aware">
+<body>
 <div class="wrap" id="app">
     <header>
         <div style="flex:1">

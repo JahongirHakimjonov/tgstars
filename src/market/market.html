@@ -1,26 +1,34 @@
 <!doctype html>
-<html lang="en">
+<html lang="uz">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>Tirikchilik — Telegram WebApp UI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+    <title>Tirikchilik — Telegram WebApp UI (Improved)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
     <style>
         :root {
-            --bg: var(--tg-theme-bg-color);
-            --card: var(--tg-theme-section-bg-color);
-            --tg-text: var(--tg-theme-text-color);
-            --hint-color: var(--tg-theme-hint-color);
-            --accent: var(--tg-theme-button-color); /* warm accent (like bot) */
-            --section_separator_color: var(--tg-theme-subtitle-text-color);
-            --soft: #f1f3f5;
-            --radius: 16px;
+            /* Telegram theme variables (fallbacks provided) */
+            --tg-bg: #f6f8fb;
+            --tg-card: #ffffff;
+            --tg-text: #0f1724;
+            --tg-hint: #6b7280;
+            --tg-accent: #2a9df4;
+            --radius: 14px;
+            --soft: #f4f6f8;
+            --max-width: 420px;
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Respect Telegram dynamic colors if available */
+        .tg-theme-aware {
+            --bg: var(--tg-theme-bg-color, var(--tg-bg));
+            --card: var(--tg-theme-section-bg-color, var(--tg-card));
+            --text: var(--tg-theme-text-color, var(--tg-text));
+            --hint: var(--tg-theme-hint-color, var(--tg-hint));
+            --accent: var(--tg-theme-button-color, var(--tg-accent));
         }
 
         * {
@@ -28,17 +36,16 @@
         }
 
         html, body {
-            height: 100%
-        }
-
-        body {
+            height: 100%;
             margin: 0;
-            background: radial-gradient(circle at 10% 10%, rgba(42, 157, 244, 0.06), transparent 10%), var(--bg);
-            color: var(--bg);
+            background: linear-gradient(180deg, rgba(42, 157, 244, 0.03), transparent 30%), var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale
         }
 
         .wrap {
-            max-width: 420px;
+            max-width: var(--max-width);
             margin: 12px auto;
             padding: 14px;
             position: relative
@@ -50,60 +57,60 @@
             gap: 12px
         }
 
-        .brand {
-            display: flex;
-            flex-direction: column
-        }
-
         .brand h1 {
             margin: 0;
             font-size: 20px;
-            letter-spacing: -0.3px;
-            color: var(--tg-text);
+            letter-spacing: -0.3px
         }
 
         .brand p {
             margin: 0;
-            color: var(--hint-color);
+            color: var(--hint);
             font-size: 12px
         }
 
+        /* Grid */
         .card-grid {
             display: grid;
             grid-template-columns:repeat(2, 1fr);
-            gap: 14px;
+            gap: 12px;
             margin-top: 14px
         }
 
         .product-card {
             background: var(--card);
-            border-radius: 14px;
-            padding: 12px;
-            box-shadow: 0 10px 30px rgba(22, 30, 50, 0.06);
-            border: 1px solid rgba(15, 20, 25, 0.04);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 8px 22px rgba(12, 16, 20, 0.05);
+            border: 1px solid rgba(12, 16, 20, 0.03);
             cursor: pointer;
-            transition: transform .18s ease, box-shadow .18s ease
+            transition: transform .18s ease, box-shadow .18s
+        }
+
+        .product-card:focus {
+            outline: 3px solid rgba(42, 157, 244, 0.12)
         }
 
         .product-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 18px 40px rgba(22, 30, 50, 0.09)
+            box-shadow: 0 18px 40px rgba(12, 16, 20, 0.07)
         }
 
         .product-top {
-            background: linear-gradient(180deg, #fbfbfb, #f7f7f8);
             border-radius: 10px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 120px
+            height: 128px;
+            background: linear-gradient(180deg, #fafafa, #f2f5f8)
         }
 
         .product-top img {
             max-width: 100%;
-            max-height: 96px;
-            object-fit: contain
+            max-height: 110px;
+            object-fit: contain;
+            display: block
         }
 
         .product-info {
@@ -113,11 +120,11 @@
         .product-price {
             font-weight: 800;
             font-size: 16px;
-            color: var(--tg-text);
+            color: var(--text)
         }
 
         .product-title {
-            color: var(--hint-color);
+            color: var(--hint);
             font-size: 13px;
             margin-top: 6px
         }
@@ -127,37 +134,38 @@
             position: fixed;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 18px;
-            width: 420px;
+            bottom: calc(env(safe-area-inset-bottom, 18px) + 6px);
+            width: var(--max-width);
             max-width: 96vw;
-            background: transparent
+            pointer-events: none
         }
 
         .tabs {
             display: flex;
             gap: 10px;
-            padding: 10px;
-            background: transparent
+            padding: 6px;
+            background: transparent;
+            pointer-events: auto
         }
 
         .tab {
             flex: 1;
             background: var(--card);
-            padding: 12px;
-            border-radius: 16px;
+            padding: 10px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(12, 16, 20, 0.06);
-            border: 1px solid rgba(15, 20, 25, 0.04);
-            transition: all .18s
+            box-shadow: 0 8px 22px rgba(12, 16, 20, 0.05);
+            border: 1px solid rgba(12, 16, 20, 0.03);
+            transition: transform .18s, box-shadow .18s
         }
 
         .tab.active {
-            background: linear-gradient(180deg, var(--accent), #3498db);
+            background: linear-gradient(90deg, var(--accent), #1b8ad8);
             color: #fff;
-            box-shadow: 0 18px 40px rgba(240, 160, 20, 0.18);
-            transform: translateY(-6px)
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(26, 138, 216, 0.15)
         }
 
         .tab button {
@@ -166,12 +174,12 @@
             font-size: 18px
         }
 
-        /* search area */
+        /* search */
         .search-wrap {
             margin-top: 14px;
             padding: 12px;
             border-radius: 12px;
-            background: var(--section_bg_color);
+            background: var(--card);
             box-shadow: 0 8px 30px rgba(12, 16, 20, 0.04);
             border: 1px solid rgba(12, 16, 20, 0.03)
         }
@@ -184,7 +192,7 @@
         .search-box input {
             flex: 1;
             padding: 12px;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid #e7ebf0;
             background: transparent
         }
@@ -192,7 +200,7 @@
         .search-box button {
             background: var(--accent);
             border: 0;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 10px;
             color: #fff;
             font-weight: 700
@@ -225,13 +233,12 @@
         }
 
         .category h3 {
-            margin: 0;
-            color: var(--tg-text);
+            margin: 0
         }
 
         .category p {
             margin: 0;
-            color: var(--hint-color);
+            color: var(--hint);
             font-size: 13px
         }
 
@@ -248,12 +255,13 @@
 
         .modal-panel {
             width: 100%;
-            max-width: 680px;
+            max-width: 720px;
             background: var(--card);
             border-radius: 18px;
             padding: 18px;
             box-shadow: 0 40px 80px rgba(2, 6, 23, 0.5);
-            border: 1px solid rgba(10, 14, 20, 0.04)
+            border: 1px solid rgba(10, 14, 20, 0.04);
+            position: relative
         }
 
         .modal-hero {
@@ -318,9 +326,29 @@
             color: #fff
         }
 
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 12px
+        }
+
+        .qty {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .qty button {
+            padding: 8px;
+            border-radius: 8px;
+            border: 0;
+            background: var(--soft);
+            min-width: 40px
+        }
+
         .addbtn {
-            margin-top: 16px;
-            padding: 14px;
+            padding: 12px;
             border-radius: 12px;
             border: 0;
             background: linear-gradient(90deg, var(--accent), #1b8ad8);
@@ -353,7 +381,7 @@
         .empty {
             padding: 40px;
             text-align: center;
-            color: var(--hint-color)
+            color: var(--hint)
         }
 
         .badge {
@@ -364,14 +392,39 @@
             font-weight: 700
         }
 
+        /* lightbox fullscreen */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999
+        }
+
+        .lightbox img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain
+        }
+
         @media (max-width: 460px) {
             .wrap {
                 padding: 10px
             }
+
+            .modal-hero {
+                flex-direction: column
+            }
+
+            .product-top {
+                height: 110px
+            }
         }
     </style>
 </head>
-<body>
+<body class="tg-theme-aware">
 <div class="wrap" id="app">
     <header>
         <div style="flex:1">
@@ -381,8 +434,8 @@
             </div>
         </div>
         <div>
-            <button id="openTelegram"
-                    style="padding:8px 10px;border-radius:10px;border:1px solid rgba(12,16,20,0.04);background:var(--soft);color:var(--hint-color);font-weight:700;font-size:13px;cursor:pointer;">
+            <button id="openTelegram" aria-label="Open in Telegram"
+                    style="padding:8px 10px;border-radius:10px;border:1px solid rgba(12,16,20,0.04);background:var(--soft);color:var(--hint);font-weight:700;font-size:13px;cursor:pointer;">
                 Open
             </button>
         </div>
@@ -390,96 +443,85 @@
 
     <main id="mainContent"></main>
 
-    <div class="bottom">
+    <div class="bottom" role="navigation" aria-label="Main tabs">
         <div class="tabs">
-            <div class="tab" data-tab="latest">
-                <button title="Latest">🏠</button>
+            <div class="tab" data-tab="latest" title="So'nggi" tabindex="0">
+                <button>🏠</button>
             </div>
-            <div class="tab" data-tab="search">
-                <button title="Search">🔍</button>
+            <div class="tab" data-tab="search" title="Qidiruv" tabindex="0">
+                <button>🔍</button>
             </div>
-            <div class="tab" data-tab="categories">
-                <button title="Categories">▦</button>
+            <div class="tab" data-tab="categories" title="Kategoriyalar" tabindex="0">
+                <button>▦</button>
             </div>
-            <div class="tab" data-tab="cart">
-                <button title="Cart">🛒 <span id="cartCount"></span></button>
+            <div class="tab" data-tab="cart" title="Savat" tabindex="0">
+                <button>🛒 <span id="cartCount"></span></button>
             </div>
         </div>
     </div>
 </div>
 
 <div id="modalRoot"></div>
+<div id="lightboxRoot"></div>
 
 <script>
-    // --- SAMPLE DATA --- (unchanged, use your real API in production)
+    // --- SAMPLE DATA ---
     const DATA = {
-        categories: [
-            {
-                id: 'men',
-                name: 'Erkaklar',
-                img: 'https://i.postimg.cc/T3HZ6NLt/photo-2025-08-06-19-23-14.jpg'
-            },
-            {
-                id: 'women',
-                name: 'Ayollar',
-                img: 'https://i.postimg.cc/T3HZ6NLt/photo-2025-08-06-19-23-14.jpg'
-            }
-        ],
-        products: [
-            {
-                id: 'p1',
-                title: 'Hayot T-Shirt',
-                price: 250000,
-                category: 'men',
-                type: 'tshirt',
-                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
-                description: 'Hayot — bu o‘z qadrini bilish :) Futbolka 100% paxta',
-                colors: [{name: 'Lavender', hex: '#c09dd9', sizes: ['S', 'M', 'L']}, {
-                    name: 'Lilac',
-                    hex: '#9b6fa8',
-                    sizes: ['M', 'L']
-                }]
-            },
-            {
-                id: 'p2',
-                title: 'Katakli ko\'ylak',
-                price: 200000,
-                category: 'men',
-                type: 'shirt',
-                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
-                description: 'Qulay katakli ko\'ylak. 60% paxta.',
-                colors: [{name: 'Brown', hex: '#c58c6b', sizes: ['M', 'L', 'XL']}, {
-                    name: 'Grey',
-                    hex: '#d1d3d6',
-                    sizes: ['S', 'M']
-                }]
-            },
-            {
-                id: 'p3',
-                title: 'Kepka',
-                price: 150000,
-                category: 'men',
-                type: 'cap',
-                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
-                description: 'Stylish kepka. Oson kiyiladi.',
-                colors: [{name: 'Maroon', hex: '#7a2436', sizes: []}, {name: 'Beige', hex: '#cbbfae', sizes: []}]
-            },
-            {
-                id: 'p4',
-                title: 'Basic Tee',
-                price: 230000,
-                category: 'women',
-                type: 'tshirt',
-                images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
-                description: 'Oddiy va qulay. 100% paxta',
-                colors: [{name: 'White', hex: '#ffffff', sizes: ['S', 'M', 'L']}, {
-                    name: 'Pink',
-                    hex: '#f6c6d0',
-                    sizes: ['S', 'M']
-                }]
-            }
-        ]
-    }
+        categories: [{
+            id: 'men',
+            name: 'Erkaklar',
+            img: 'https://i.postimg.cc/T3HZ6NLt/photo-2025-08-06-19-23-14.jpg'
+        }, {id: 'women', name: 'Ayollar', img: 'https://i.postimg.cc/T3HZ6NLt/photo-2025-08-06-19-23-14.jpg'}],
+        products: [{
+            id: 'p1',
+            title: 'Hayot T-Shirt',
+            price: 250000,
+            category: 'men',
+            type: 'tshirt',
+            images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+            description: "Hayot — bu o'z qadrini bilish :) Futbolka 100% paxta",
+            colors: [{name: 'Lavender', hex: '#c09dd9', sizes: ['S', 'M', 'L']}, {
+                name: 'Lilac',
+                hex: '#9b6fa8',
+                sizes: ['M', 'L']
+            }]
+        }, {
+            id: 'p2',
+            title: "Katakli ko'ylak",
+            price: 200000,
+            category: 'men',
+            type: 'shirt',
+            images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+            description: "Qulay katakli ko'ylak. 60% paxta.",
+            colors: [{name: 'Brown', hex: '#c58c6b', sizes: ['M', 'L', 'XL']}, {
+                name: 'Grey',
+                hex: '#d1d3d6',
+                sizes: ['S', 'M']
+            }]
+        }, {
+            id: 'p3',
+            title: 'Kepka',
+            price: 150000,
+            category: 'men',
+            type: 'cap',
+            images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+            description: 'Stylish kepka. Oson kiyiladi.',
+            colors: [{name: 'Maroon', hex: '#7a2436', sizes: []}, {name: 'Beige', hex: '#cbbfae', sizes: []}]
+        }, {
+            id: 'p4',
+            title: 'Basic Tee',
+            price: 230000,
+            category: 'women',
+            type: 'tshirt',
+            images: ['https://i.postimg.cc/T1qzvRgb/photo-2025-08-09-23-16-33.jpg'],
+            description: 'Oddiy va qulay. 100% paxta',
+            colors: [{name: 'White', hex: '#ffffff', sizes: ['S', 'M', 'L']}, {
+                name: 'Pink',
+                hex: '#f6c6d0',
+                sizes: ['S', 'M']
+            }]
+        }]
+    };
 
     // --- STATE ---
     let state = {tab: 'latest', query: '', cart: [], modal: null}
@@ -494,17 +536,27 @@
 
     function saveCart() {
         localStorage.setItem('tg_webapp_cart', JSON.stringify(state.cart));
-        updateCartCount()
+        updateCartCount();
     }
 
     function updateCartCount() {
         const el = document.getElementById('cartCount');
         const total = state.cart.reduce((s, i) => s + i.qty, 0);
-        el.innerHTML = total ? `<span class="badge">${total}</span>` : ''
+        el.innerHTML = total ? `<span class='badge'>${total}</span>` : ''
     }
 
     function formatPrice(v) {
-        return v.toLocaleString('ru-RU') + ' UZS'
+        return new Intl.NumberFormat('ru-RU').format(v) + ' UZS'
+    }
+
+    // Preload important images for faster first paint
+    function preloadImages() {
+        const urls = DATA.products.flatMap(p => p.images);
+        urls.forEach(u => {
+            const im = new Image();
+            im.src = u;
+            im.loading = 'eager'
+        })
     }
 
     // --- RENDER ---
@@ -524,10 +576,17 @@
         DATA.products.forEach(p => {
             const card = document.createElement('div');
             card.className = 'product-card';
+            card.tabIndex = 0;
             const top = document.createElement('div');
             top.className = 'product-top';
             const img = document.createElement('img');
             img.src = p.images[0];
+            img.loading = 'eager';
+            img.alt = p.title;
+            img.addEventListener('click', e => {
+                e.stopPropagation();
+                openLightbox(p.images[0])
+            });
             top.appendChild(img);
             card.appendChild(top);
             const info = document.createElement('div');
@@ -542,9 +601,12 @@
             info.appendChild(title);
             card.appendChild(info);
             card.addEventListener('click', () => openProduct(p.id));
-            grid.appendChild(card);
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter') openProduct(p.id)
+            });
+            grid.appendChild(card)
         });
-        container.appendChild(grid);
+        container.appendChild(grid)
     }
 
     function renderSearch(container) {
@@ -553,11 +615,14 @@
         const box = document.createElement('div');
         box.className = 'search-box';
         const input = document.createElement('input');
-        input.placeholder = "So'rovingiz";
+        input.placeholder = "Mahsulot, model yoki tavsif qidirish";
         input.value = state.query;
         input.addEventListener('input', e => state.query = e.target.value);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') doSearch(state.query)
+        });
         const btn = document.createElement('button');
-        btn.textContent = 'Search';
+        btn.textContent = 'Qidirish';
         btn.addEventListener('click', () => doSearch(state.query));
         box.appendChild(input);
         box.appendChild(btn);
@@ -566,7 +631,7 @@
         results.id = 'searchResults';
         results.style.marginTop = '14px';
         wrap.appendChild(results);
-        container.appendChild(wrap);
+        container.appendChild(wrap)
     }
 
     function doSearch(q) {
@@ -590,6 +655,8 @@
             top.className = 'product-top';
             const img = document.createElement('img');
             img.src = p.images[0];
+            img.alt = p.title;
+            img.loading = 'eager';
             top.appendChild(img);
             c.appendChild(top);
             const info = document.createElement('div');
@@ -617,6 +684,7 @@
             item.className = 'category';
             const img = document.createElement('img');
             img.src = cat.img;
+            img.alt = cat.name;
             item.appendChild(img);
             const txt = document.createElement('div');
             txt.innerHTML = `<h3>${cat.name}</h3><p>${DATA.products.filter(p => p.category === cat.id).length} mahsulot</p>`;
@@ -624,7 +692,7 @@
             item.addEventListener('click', () => openCategory(cat.id));
             list.appendChild(item)
         });
-        container.appendChild(list);
+        container.appendChild(list)
     }
 
     function renderCart(container) {
@@ -641,10 +709,11 @@
             row.className = 'cart-item';
             const img = document.createElement('img');
             img.src = p.images[0];
+            img.alt = p.title;
             row.appendChild(img);
             const txt = document.createElement('div');
             txt.style.flex = '1';
-            txt.innerHTML = `<div style="font-weight:800;color:var(--tg-text)">${p.title}</div><div style="color:var(--hint-color)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800;color:var(--tg-text)">${formatPrice(p.price)} x ${item.qty}</div>`;
+            txt.innerHTML = `<div style="font-weight:800;color:var(--text)">${p.title}</div><div style="color:var(--hint)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800;color:var(--text)">${formatPrice(p.price)} x ${item.qty}</div>`;
             row.appendChild(txt);
             const actions = document.createElement('div');
             actions.innerHTML = '<button style="background:transparent;border:0;font-size:18px">❌</button>';
@@ -657,7 +726,7 @@
         const total = state.cart.reduce((s, i) => s + (DATA.products.find(p => p.id === i.productId).price * i.qty), 0);
         const tot = document.createElement('div');
         tot.style.marginTop = '12px';
-        tot.innerHTML = `<div style="font-weight:800;font-size:18px;color:var(--tg-text)">Jami: ${formatPrice(total)}</div>`;
+        tot.innerHTML = `<div style="font-weight:800;font-size:18px;color:var(--text)">Jami: ${formatPrice(total)}</div>`;
         wrap.appendChild(tot);
         const checkout = document.createElement('button');
         checkout.className = 'addbtn';
@@ -667,17 +736,20 @@
                 const payload = {cart: state.cart, total};
                 window.Telegram.WebApp.MainButton.setText('Buyurtmani yuborish');
                 window.Telegram.WebApp.MainButton.show();
-                window.Telegram.WebApp.onEvent('mainButtonClicked', () => {
+                const handler = () => {
                     window.Telegram.WebApp.sendData(JSON.stringify(payload));
-                    alert('Buyurtma yuborildi')
-                });
-            } else alert('Buyurtma: ' + JSON.stringify({cart: state.cart, total}));
+                    alert('Buyurtma yuborildi');
+                    window.Telegram.WebApp.offEvent('mainButtonClicked', handler);
+                    window.Telegram.WebApp.MainButton.hide()
+                };
+                window.Telegram.WebApp.onEvent('mainButtonClicked', handler)
+            } else alert('Buyurtma: ' + JSON.stringify({cart: state.cart, total}))
         });
         wrap.appendChild(checkout);
-        container.appendChild(wrap);
+        container.appendChild(wrap)
     }
 
-    // --- CATEGORY -> TYPE -> PRODUCTS flow ---
+    // --- flows ---
     function openCategory(catId) {
         const types = [...new Set(DATA.products.filter(p => p.category === catId).map(p => p.type))];
         const main = document.getElementById('mainContent');
@@ -700,7 +772,7 @@
         types.forEach(t => {
             const div = document.createElement('div');
             div.className = 'category';
-            div.innerHTML = `<img src='https://via.placeholder.com/120?text=${t}' /><div style='font-weight:800'>${t}</div><div style='color:var(--hint-color);font-size:13px'>${DATA.products.filter(p => p.category === catId && p.type === t).length} ta</div>`;
+            div.innerHTML = `<img src='https://via.placeholder.com/120?text=${t}'/><div style='font-weight:800'>${t}</div><div style='color:var(--hint);font-size:13px'>${DATA.products.filter(p => p.category === catId && p.type === t).length} ta</div>`;
             div.addEventListener('click', () => openType(catId, t));
             wrap.appendChild(div)
         });
@@ -725,6 +797,8 @@
             top.className = 'product-top';
             const img = document.createElement('img');
             img.src = p.images[0];
+            img.alt = p.title;
+            img.loading = 'eager';
             top.appendChild(img);
             c.appendChild(top);
             const info = document.createElement('div');
@@ -773,6 +847,9 @@
         left.className = 'modal-left';
         const img = document.createElement('img');
         img.src = p.images[0];
+        img.alt = p.title;
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', () => openLightbox(p.images[0]));
         left.appendChild(img);
         const right = document.createElement('div');
         right.className = 'modal-right';
@@ -780,7 +857,7 @@
         title.textContent = p.title + ' • ' + formatPrice(p.price);
         right.appendChild(title);
         const desc = document.createElement('div');
-        desc.style.color = 'var(--hint-color)';
+        desc.style.color = 'var(--hint)';
         desc.style.marginTop = '8px';
         desc.textContent = p.description;
         right.appendChild(desc);
@@ -806,13 +883,13 @@
         right.appendChild(colorsDiv);
         const slabel = document.createElement('div');
         slabel.className = 'label';
-        slabel.textContent = 'O\'lchamni tanlang';
+        slabel.textContent = "O'lchamni tanlang";
         right.appendChild(slabel);
         const sizesDiv = document.createElement('div');
         sizesDiv.className = 'sizes';
         const sizes = p.colors[state.modal.selectedColorIndex].sizes;
         if (sizes.length === 0) {
-            sizesDiv.innerHTML = '<div style="color:var(--hint-color)">Bu mahsulot uchun o\'lcham talab qilinmaydi</div>'
+            sizesDiv.innerHTML = "<div style='color:var(--hint)'>Bu mahsulot uchun o'lcham talab qilinmaydi</div>"
         }
         sizes.forEach(sz => {
             const item = document.createElement('div');
@@ -826,41 +903,103 @@
             sizesDiv.appendChild(item)
         });
         right.appendChild(sizesDiv);
+
+        // quantity + share + add
+        const controls = document.createElement('div');
+        controls.className = 'controls';
+        const qtyWrap = document.createElement('div');
+        qtyWrap.className = 'qty';
+        const minus = document.createElement('button');
+        minus.textContent = '−';
+        minus.addEventListener('click', () => {
+            if (state.modal.qty > 1) state.modal.qty--;
+            renderModal(p)
+        });
+        const qty = document.createElement('div');
+        qty.textContent = state.modal.qty;
+        qty.style.minWidth = '28px';
+        qty.style.textAlign = 'center';
+        const plus = document.createElement('button');
+        plus.textContent = '+';
+        plus.addEventListener('click', () => {
+            state.modal.qty++;
+            renderModal(p)
+        });
+        qtyWrap.appendChild(minus);
+        qtyWrap.appendChild(qty);
+        qtyWrap.appendChild(plus);
+        controls.appendChild(qtyWrap);
+
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 'addbtn';
+        shareBtn.style.width = 'auto';
+        shareBtn.style.padding = '10px 12px';
+        shareBtn.style.minWidth = '120px';
+        shareBtn.style.marginLeft = 'auto';
+        shareBtn.textContent = 'Ulashing';
+        shareBtn.addEventListener('click', () => {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.shareData(JSON.stringify({id: p.id, title: p.title, price: p.price}))
+            } else {
+                navigator.clipboard?.writeText(window.location.href);
+                alert('Havola nusxalandi')
+            }
+        });
+        controls.appendChild(shareBtn);
+
+        right.appendChild(controls);
+
         const addBtn = document.createElement('button');
         addBtn.className = 'addbtn';
-        const canAdd = (sizes.length === 0) || state.modal.selectedSize;
-        addBtn.textContent = 'Qo\'shish';
+        const sizesList = p.colors[state.modal.selectedColorIndex].sizes;
+        const canAdd = (sizesList.length === 0) || state.modal.selectedSize;
+        addBtn.textContent = `Qo'shish ${state.modal.qty > 1 ? `×${state.modal.qty}` : ''}`;
         addBtn.disabled = !canAdd;
         if (!canAdd) addBtn.style.opacity = 0.6;
         addBtn.addEventListener('click', () => {
             const colorObj = p.colors[state.modal.selectedColorIndex];
-            addToCart(p.id, colorObj, state.modal.selectedSize || null);
+            addToCart(p.id, colorObj, state.modal.selectedSize || null, state.modal.qty);
             closeModal();
             state.tab = 'cart';
             render()
         });
         right.appendChild(addBtn);
+
         hero.appendChild(left);
         hero.appendChild(right);
         panel.appendChild(hero);
         const closeBtn = document.createElement('div');
         closeBtn.style.position = 'absolute';
-        closeBtn.style.right = '28px';
-        closeBtn.style.top = '28px';
-        closeBtn.innerHTML = '<button style="border-radius:50%;padding:8px 10px">✖</button>';
+        closeBtn.style.right = '18px';
+        closeBtn.style.top = '18px';
+        closeBtn.innerHTML = `<button style='border-radius:50%;padding:8px 10px'>✖</button>`;
         closeBtn.querySelector('button').addEventListener('click', closeModal);
         panel.appendChild(closeBtn);
         modal.appendChild(panel);
         root.appendChild(modal)
     }
 
-    // --- CART ACTIONS ---
-    function addToCart(productId, colorObj, size) {
+    // lightbox
+    function openLightbox(src) {
+        const root = document.getElementById('lightboxRoot');
+        root.innerHTML = '';
+        const box = document.createElement('div');
+        box.className = 'lightbox';
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Full image';
+        box.appendChild(img);
+        box.addEventListener('click', () => root.innerHTML = '');
+        root.appendChild(box)
+    }
+
+    // cart actions
+    function addToCart(productId, colorObj, size, qty = 1) {
         const existing = state.cart.find(i => i.productId === productId && i.color.name === colorObj.name && i.size === size);
         if (existing) {
-            existing.qty += 1
+            existing.qty += qty
         } else {
-            state.cart.push({productId, color: colorObj, size, qty: 1})
+            state.cart.push({productId, color: colorObj, size, qty})
         }
         saveCart();
         alert('Mahsulot savatga qo\'shildi')
@@ -873,10 +1012,11 @@
         render()
     }
 
-    // --- INIT ---
+    // init
     function init() {
         loadCart();
         updateCartCount();
+        preloadImages();
         document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
             state.tab = t.dataset.tab;
             render()
@@ -890,7 +1030,16 @@
         if (window.Telegram && window.Telegram.WebApp) {
             try {
                 window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.MainButton.hide()
+                window.Telegram.WebApp.MainButton.hide(); /* adopt theme variables from Telegram */
+                const themeVars = window.Telegram.WebApp;
+                const root = document.querySelector('.tg-theme-aware');
+                if (themeVars?.themeParams) {
+                    root.style.setProperty('--tg-theme-bg-color', themeVars.themeParams.bg_color);
+                    root.style.setProperty('--tg-theme-section-bg-color', themeVars.themeParams.section_bg_color);
+                    root.style.setProperty('--tg-theme-text-color', themeVars.themeParams.text_color);
+                    root.style.setProperty('--tg-theme-hint-color', themeVars.themeParams.hint_color);
+                    root.style.setProperty('--tg-theme-button-color', themeVars.themeParams.button_color);
+                }
             } catch (e) {
             }
         }

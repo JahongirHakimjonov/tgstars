@@ -12,7 +12,8 @@
         :root {
             --bg: var(--tg-theme-bg-color, #ffffff);
             --card: var(--tg-theme-section-bg-color, #f9f9f9);
-            --muted: #6b6f76;
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #888888);
             --accent: var(--tg-theme-button-color, #2ea6ff); /* warm accent (like bot) */
             --dark: #0f1720;
             --soft: #f1f3f5;
@@ -58,11 +59,12 @@
             margin: 0;
             font-size: 20px;
             letter-spacing: -0.3px
+            color: var(--tg-text);
         }
 
         .brand p {
             margin: 0;
-            color: var(--muted);
+            color: var(--hint-color);
             font-size: 12px
         }
 
@@ -110,11 +112,12 @@
 
         .product-price {
             font-weight: 800;
-            font-size: 16px
+            font-size: 16px;
+            color: var(--tg-text);
         }
 
         .product-title {
-            color: var(--muted);
+            color: var(--hint-color);
             font-size: 13px;
             margin-top: 6px
         }
@@ -168,7 +171,7 @@
             margin-top: 14px;
             padding: 12px;
             border-radius: 12px;
-            background: linear-gradient(180deg, #fff, #fbfbfb);
+            background: var(--section_bg_color);
             box-shadow: 0 8px 30px rgba(12, 16, 20, 0.04);
             border: 1px solid rgba(12, 16, 20, 0.03)
         }
@@ -209,7 +212,7 @@
             align-items: center;
             padding: 12px;
             border-radius: 12px;
-            background: linear-gradient(180deg, #fff, #fcfcfd);
+            background: var(--section_bg_color)
             box-shadow: 0 8px 20px rgba(12, 16, 20, 0.03);
             border: 1px solid rgba(12, 16, 20, 0.03)
         }
@@ -227,7 +230,7 @@
 
         .category p {
             margin: 0;
-            color: var(--muted);
+            color: var(--hint-color);
             font-size: 13px
         }
 
@@ -349,7 +352,7 @@
         .empty {
             padding: 40px;
             text-align: center;
-            color: var(--muted)
+            color: var(--hint-color)
         }
 
         .badge {
@@ -640,7 +643,7 @@
             row.appendChild(img);
             const txt = document.createElement('div');
             txt.style.flex = '1';
-            txt.innerHTML = `<div style="font-weight:800">${p.title}</div><div style="color:var(--muted)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800">${formatPrice(p.price)} x ${item.qty}</div>`;
+            txt.innerHTML = `<div style="font-weight:800">${p.title}</div><div style="color:var(--hint-color)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800">${formatPrice(p.price)} x ${item.qty}</div>`;
             row.appendChild(txt);
             const actions = document.createElement('div');
             actions.innerHTML = '<button style="background:transparent;border:0;font-size:18px">❌</button>';
@@ -696,7 +699,7 @@
         types.forEach(t => {
             const div = document.createElement('div');
             div.className = 'category';
-            div.innerHTML = `<img src='https://via.placeholder.com/120?text=${t}' /><div style='font-weight:800'>${t}</div><div style='color:var(--muted);font-size:13px'>${DATA.products.filter(p => p.category === catId && p.type === t).length} ta</div>`;
+            div.innerHTML = `<img src='https://via.placeholder.com/120?text=${t}' /><div style='font-weight:800'>${t}</div><div style='color:var(--hint-color);font-size:13px'>${DATA.products.filter(p => p.category === catId && p.type === t).length} ta</div>`;
             div.addEventListener('click', () => openType(catId, t));
             wrap.appendChild(div)
         });
@@ -776,7 +779,7 @@
         title.textContent = p.title + ' • ' + formatPrice(p.price);
         right.appendChild(title);
         const desc = document.createElement('div');
-        desc.style.color = 'var(--muted)';
+        desc.style.color = 'var(--hint-color)';
         desc.style.marginTop = '8px';
         desc.textContent = p.description;
         right.appendChild(desc);
@@ -808,7 +811,7 @@
         sizesDiv.className = 'sizes';
         const sizes = p.colors[state.modal.selectedColorIndex].sizes;
         if (sizes.length === 0) {
-            sizesDiv.innerHTML = '<div style="color:var(--muted)">Bu mahsulot uchun o\'lcham talab qilinmaydi</div>'
+            sizesDiv.innerHTML = '<div style="color:var(--hint-color)">Bu mahsulot uchun o\'lcham talab qilinmaydi</div>'
         }
         sizes.forEach(sz => {
             const item = document.createElement('div');

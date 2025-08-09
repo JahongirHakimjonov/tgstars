@@ -151,6 +151,7 @@
         .tab {
             flex: 1;
             background: var(--card);
+            color: var(--tg-text);
             padding: 10px;
             border-radius: 14px;
             display: flex;
@@ -729,7 +730,7 @@
             txt.innerHTML = `<div style="font-weight:800;color:var(--text)">${p.title}</div><div style="color:var(--hint)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800;color:var(--text)">${formatPrice(p.price)} x ${item.qty}</div>`;
             row.appendChild(txt);
             const actions = document.createElement('div');
-            actions.innerHTML = '<button style="background:transparent;border:0;font-size:8px"><img style="width:10px;height: 10px;color: var(--tg-text)" src="https://i.postimg.cc/9fFVCgBS/cancel-svgrepo-com.png" alt="Главная" width="5" height="5" /></button>';
+            actions.innerHTML = '<button style="background:transparent;border:0;font-size:8px"><img style="width:10px;height:10px" src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/x.svg" alt="Удалить" width="10" height="10" /></button>';
             actions.querySelector('button').addEventListener('click', () => {
                 removeFromCart(item)
             });

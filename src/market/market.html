@@ -644,7 +644,7 @@
             row.appendChild(img);
             const txt = document.createElement('div');
             txt.style.flex = '1';
-            txt.innerHTML = `<div style="font-weight:800">${p.title}</div><div style="color:var(--hint-color)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800">${formatPrice(p.price)} x ${item.qty}</div>`;
+            txt.innerHTML = `<div style="font-weight:800;color:var(--tg-text)">${p.title}</div><div style="color:var(--hint-color)">${item.color ? item.color.name : ''} • ${item.size || ''}</div><div style="margin-top:8px;font-weight:800;color:var(--tg-text)">${formatPrice(p.price)} x ${item.qty}</div>`;
             row.appendChild(txt);
             const actions = document.createElement('div');
             actions.innerHTML = '<button style="background:transparent;border:0;font-size:18px">❌</button>';

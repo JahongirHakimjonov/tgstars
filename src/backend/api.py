@@ -13,6 +13,12 @@ async def serve_webapp() -> str:
         return f.read()
 
 
+@router.get("/market", response_class=HTMLResponse)
+async def serve_webapp() -> str:
+    with open("src/market/index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+
 @router.post("/api/pay")
 async def pay(
     data: PayRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
@@ -29,7 +35,7 @@ async def pay(
 
 @router.post("/api/refund")
 async def refund(
-    data: RefundRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
+        data: RefundRequest, invoice: CreateInvoiceService = Depends(get_invoice_service)
 ) -> JSONResponse:
     user_id = data.user_id
     charge_id = data.charge_id

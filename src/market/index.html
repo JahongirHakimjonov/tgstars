@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Telegram-style Product Gallery</title>
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+
+    <style>
+        :root {
+            --tg-bg: var(--tg-theme-bg-color, #ffffff);
+            --tg-card: #fff;
+            --tg-text: var(--tg-theme-text-color, #111);
+            --tg-hint: var(--tg-theme-hint-color, #707070);
+            --accent: var(--tg-theme-button-color, #2ea6ff);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: var(--tg-bg);
+            color: var(--tg-text);
+            -webkit-font-smoothing: antialiased;
+            padding: 12px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--tg-card);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 6px 20px rgba(22, 27, 33, 0.06);
+            margin-bottom: 14px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 700
+        }
+
+        .desc {
+            font-size: 14px;
+            color: var(--tg-hint);
+            margin-top: 6px
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 10px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .card-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(90deg, #f0f0f0, #e9e9e9);
+            cursor: pointer;
+        }
+
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .skeleton {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #efefef, #e6e6e6);
+            animation: shimmer 1.1s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .viewer {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(2, 2, 2, 0.95);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .viewer.active {
+            display: flex
+        }
+
+        .viewer .topbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            color: #fff;
+        }
+
+        .viewer .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .viewer .infobar {
+            color: #fff;
+            padding: 10px 18px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .viewer .infobar .img-title {
+            font-weight: 700;
+            font-size: 18px
+        }
+
+        .viewer .infobar .meta {
+            font-size: 13px;
+            color: #ddd;
+            margin-top: 6px
+        }
+
+        .swiper {
+            width: 100%;
+            height: calc(100vh - 140px);
+        }
+
+        .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swiper-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            touch-action: none;
+        }
+
+        .thumb-row {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            overflow-x: auto;
+            width: 100%
+        }
+
+        .thumb-row img {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 8px;
+            opacity: .9;
+            border: 2px solid transparent
+        }
+
+        .thumb-row img.active {
+            border-color: var(--accent);
+            opacity: 1
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px;
+            border-radius: 10px;
+            color: #fff;
+            border: none;
+            cursor: pointer
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="row" style="justify-content:space-between">
+        <div>
+            <div class="title" id="productTitle">Premium Leather Bag</div>
+            <div class="desc" id="productDesc">Handmade full-grain leather — perfect for travel & business.</div>
+            <div class="price" id="productPrice">$129.99</div>
+        </div>
+        <div style="min-width:90px;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <button id="tgBuy" class="btn">Buy</button>
+            <button id="shareCard" class="btn" style="background:#ccc;color:#000">Share</button>
+        </div>
+    </div>
+
+    <div class="grid" id="grid">
+        <!-- images inserted by JS -->
+    </div>
+</div>
+
+<!-- Fullscreen viewer -->
+<div class="viewer" id="viewer">
+    <div class="topbar">
+        <div style="display:flex;gap:10px;align-items:center">
+            <button id="closeViewer" class="icon-btn">✕</button>
+        </div>
+        <div class="controls">
+            <button id="prevBtn" class="icon-btn">‹</button>
+            <button id="nextBtn" class="icon-btn">›</button>
+            <button id="shareBtn" class="icon-btn" title="Share">⤴</button>
+            <button id="buyBtn" class="btn">Buy</button>
+        </div>
+    </div>
+
+    <div class="swiper">
+        <div class="swiper-wrapper" id="swiperWrapper"></div>
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <div class="infobar" id="infoBar">
+        <div class="img-title" id="imgTitle">Image title</div>
+        <div class="meta" id="imgMeta">by Author • 2025-08-09</div>
+    </div>
+
+    <div class="thumb-row" id="thumbRow"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) tg.ready();
+
+    const IMAGES = [
+        {
+            id: 1,
+            thumb: 'https://picsum.photos/id/1015/600/600',
+            full: 'https://picsum.photos/id/1015/1400/900',
+            title: 'Sunset Road',
+            author: 'John D.',
+            date: '2025-02-10'
+        },
+        {
+            id: 2,
+            thumb: 'https://picsum.photos/id/1016/600/600',
+            full: 'https://picsum.photos/id/1016/1600/1000',
+            title: 'Leather Closeup',
+            author: 'M. Smith',
+            date: '2024-11-01'
+        },
+        {
+            id: 3,
+            thumb: 'https://picsum.photos/id/1018/600/600',
+            full: 'https://picsum.photos/id/1018/1400/1050',
+            title: 'City Line',
+            author: 'A. Lee',
+            date: '2024-05-16'
+        },
+        {
+            id: 4,
+            thumb: 'https://picsum.photos/id/1020/600/600',
+            full: 'https://picsum.photos/id/1020/1600/900',
+            title: 'Traveler',
+            author: 'C. Park',
+            date: '2023-08-22'
+        },
+        {
+            id: 5,
+            thumb: 'https://picsum.photos/id/1024/600/600',
+            full: 'https://picsum.photos/id/1024/1400/900',
+            title: 'Office Bag',
+            author: 'S. Ivan',
+            date: '2024-09-02'
+        },
+        {
+            id: 6,
+            thumb: 'https://picsum.photos/id/1027/600/600',
+            full: 'https://picsum.photos/id/1027/1600/1000',
+            title: 'On the go',
+            author: 'K. Z.',
+            date: '2025-01-30'
+        }
+    ];
+
+    const grid = document.getElementById('grid');
+    const viewer = document.getElementById('viewer');
+    const swiperWrapper = document.getElementById('swiperWrapper');
+    const thumbRow = document.getElementById('thumbRow');
+    const infoTitle = document.getElementById('imgTitle');
+    const infoMeta = document.getElementById('imgMeta');
+
+    function renderGrid(items) {
+        grid.innerHTML = '';
+        items.forEach((it, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'card-img';
+            wrap.dataset.index = idx;
+
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton';
+            wrap.appendChild(skeleton);
+
+            const img = document.createElement('img');
+            img.dataset.src = it.thumb;
+            img.alt = it.title;
+            img.loading = 'lazy';
+            img.style.display = 'none';
+            img.addEventListener('load', () => {
+                skeleton.remove();
+                img.style.display = 'block';
+            });
+
+            wrap.appendChild(img);
+            wrap.addEventListener('click', () => openViewerAt(idx));
+            grid.appendChild(wrap);
+        });
+
+        const imgs = grid.querySelectorAll('img');
+        const io = new IntersectionObserver((entries, observer) => {
+            entries.forEach(en => {
+                if (en.isIntersecting) {
+                    const el = en.target;
+                    el.src = el.dataset.src;
+                    observer.unobserve(el);
+                }
+            });
+        }, {rootMargin: '200px'});
+        imgs.forEach(i => io.observe(i));
+    }
+
+    let swiper;
+
+    function prepareViewer() {
+        swiperWrapper.innerHTML = '';
+        thumbRow.innerHTML = '';
+        IMAGES.forEach((it, idx) => {
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            const img = document.createElement('img');
+            img.src = it.full;
+            img.alt = it.title;
+            slide.appendChild(img);
+            swiperWrapper.appendChild(slide);
+
+            const t = document.createElement('img');
+            t.src = it.thumb;
+            t.dataset.index = idx;
+            t.addEventListener('click', () => swiper.slideToLoop(idx));
+            thumbRow.appendChild(t);
+        });
+
+        swiper = new Swiper('.swiper', {
+            loop: true,
+            centeredSlides: true,
+            pagination: {el: '.swiper-pagination', clickable: true},
+            on: {
+                slideChange: function () {
+                    updateInfo(this.realIndex);
+                }
+            }
+        });
+    }
+
+    function updateInfo(idx) {
+        const it = IMAGES[idx];
+        infoTitle.textContent = it.title;
+        infoMeta.textContent = `${it.author} • ${it.date}`;
+        thumbRow.querySelectorAll('img').forEach(img => img.classList.toggle('active', Number(img.dataset.index) === idx));
+    }
+
+    function openViewerAt(index) {
+        if (!swiper) {
+            prepareViewer();
+        }
+        viewer.classList.add('active');
+        swiper.slideToLoop(index, 0);
+        updateInfo(index);
+        document.body.style.overflow = 'hidden';
+    }
+
+    document.getElementById('closeViewer').addEventListener('click', () => {
+        viewer.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+    document.getElementById('prevBtn').addEventListener('click', () => swiper.slidePrev());
+    document.getElementById('nextBtn').addEventListener('click', () => swiper.slideNext());
+
+    function buyAction(item) {
+        if (tg) {
+            tg.sendData(JSON.stringify({action: 'buy', itemId: item.id}));
+            tg.showAlert('Order intent sent to bot — complete checkout on server.');
+        } else {
+            alert('Buy: ' + item.title);
+        }
+    }
+
+    document.getElementById('buyBtn').addEventListener('click', () => buyAction(IMAGES[swiper.realIndex]));
+    document.getElementById('tgBuy').addEventListener('click', () => buyAction(IMAGES[0]));
+
+    async function shareItem(item) {
+        const shareUrl = item.full;
+        const text = `${item.title} — ${item.author}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({title: item.title, text, url: shareUrl});
+            } catch (e) {
+                tg?.showAlert('Share cancelled');
+            }
+        } else {
+            await navigator.clipboard.writeText(shareUrl);
+            tg?.showAlert('Link copied to clipboard');
+        }
+    }
+
+    document.getElementById('shareBtn').addEventListener('click', () => shareItem(IMAGES[swiper.realIndex]));
+    document.getElementById('shareCard').addEventListener('click', () => shareItem(IMAGES[0]));
+
+    renderGrid(IMAGES);
+
+    if (tg) {
+        const p = tg.themeParams || {};
+        if (p.bg_color) document.documentElement.style.setProperty('--tg-bg', p.bg_color);
+        if (p.button_color) document.documentElement.style.setProperty('--accent', p.button_color);
+    }
+</script>
+</body>
+</html>

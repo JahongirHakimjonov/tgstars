@@ -203,7 +203,7 @@
             border: 0;
             padding: 10px 14px;
             border-radius: 10px;
-            color: #fff;
+            color: var(--tg-text);
             font-weight: 700
         }
 
@@ -352,7 +352,7 @@
             padding: 12px;
             border-radius: 12px;
             border: 0;
-            background: linear-gradient(90deg, var(--accent), #1b8ad8);
+            background: var(--accent);
             color: #fff;
             width: 100%;
             font-weight: 800;
@@ -443,20 +443,32 @@
     </header>
 
     <main id="mainContent"></main>
-
     <div class="bottom" role="navigation" aria-label="Main tabs">
         <div class="tabs">
             <div class="tab" data-tab="latest" title="So'nggi" tabindex="0">
-                <button>🏠</button>
+                <button>
+                    <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/house.svg" alt="Главная"
+                         width="20" height="20"/>
+                </button>
             </div>
             <div class="tab" data-tab="search" title="Qidiruv" tabindex="0">
-                <button>🔍</button>
+                <button>
+                    <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/search.svg" alt="Поиск"
+                         width="20" height="20"/>
+                </button>
             </div>
             <div class="tab" data-tab="categories" title="Kategoriyalar" tabindex="0">
-                <button>▦</button>
+                <button>
+                    <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/grid.svg" alt="Категории"
+                         width="20" height="20"/>
+                </button>
             </div>
             <div class="tab" data-tab="cart" title="Savat" tabindex="0">
-                <button>🛒 <span id="cartCount"></span></button>
+                <button>
+                    <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/cart.svg" alt="Корзина"
+                         width="20" height="20"/>
+                    <span id="cartCount"></span>
+                </button>
             </div>
         </div>
     </div>

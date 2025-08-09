@@ -15,7 +15,7 @@
             --text-color: var(--tg-theme-text-color, #000000);
             --hint-color: var(--tg-theme-hint-color, #888888);
             --accent: var(--tg-theme-button-color, #2ea6ff); /* warm accent (like bot) */
-            --dark: #0f1720;
+            --section_separator_color: var(--tg-theme-subtitle-text-color);
             --soft: #f1f3f5;
             --radius: 16px;
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
@@ -34,7 +34,7 @@
         body {
             margin: 0;
             background: radial-gradient(circle at 10% 10%, rgba(42, 157, 244, 0.06), transparent 10%), var(--bg);
-            color: var(--dark);
+            color: var(--bg);
         }
 
         .wrap {
@@ -173,7 +173,7 @@
             border-radius: 12px;
             background: var(--section_bg_color);
             box-shadow: 0 8px 30px rgba(12, 16, 20, 0.04);
-            border: 1px solid rgba(12, 16, 20, 0.03)
+            border: var(--section_separator_color);
         }
 
         .search-box {
@@ -185,7 +185,7 @@
             flex: 1;
             padding: 12px;
             border-radius: 12px;
-            border: 1px solid #e7ebf0;
+            border: var(--section_separator_color);
             background: transparent
         }
 
@@ -212,7 +212,7 @@
             align-items: center;
             padding: 12px;
             border-radius: 12px;
-            background: var(--section_bg_color)
+            background: var(--section_bg_color);
             box-shadow: 0 8px 20px rgba(12, 16, 20, 0.03);
             border: 1px solid rgba(12, 16, 20, 0.03)
         }

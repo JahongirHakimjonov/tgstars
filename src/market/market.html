@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-    <title>Tirikchilik — Telegram WebApp UI (Improved)</title>
+    <title>MILLIYTECH — Telegram WebApp UI (Improved)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -438,15 +438,9 @@
     <header>
         <div style="flex:1">
             <div class="brand">
-                <h1>Tirikchilik.uz</h1>
-                <p>@tirikchilik_bot • kiyimlar</p>
+                <h1>MILLIYTECH.UZ</h1>
+                <p>@milliytech_bot • kiyimlar</p>
             </div>
-        </div>
-        <div>
-            <button id="openTelegram" aria-label="Open in Telegram"
-                    style="padding:8px 10px;border-radius:10px;border:1px solid rgba(12,16,20,0.04);background:var(--soft);color:var(--hint);font-weight:700;font-size:13px;cursor:pointer;">
-                Open
-            </button>
         </div>
     </header>
 
@@ -1038,11 +1032,6 @@
                 state.tab = t.dataset.tab;
                 render()
             }));
-            document.getElementById('openTelegram').addEventListener('click', () => {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.expand()
-                } else alert('Telegram WebApp muhitida oching')
-            });
             render();
             if (window.Telegram && window.Telegram.WebApp) {
                 try {
